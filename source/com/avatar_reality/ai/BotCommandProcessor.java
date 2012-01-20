@@ -3,6 +3,9 @@ package com.avatar_reality.ai;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +16,7 @@ import java.util.regex.Pattern;
 
 import net.sf.jlinkgrammar.Parser;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -25,12 +29,23 @@ import org.basex.query.QueryProcessor;
 import org.basex.query.item.Item;
 import org.basex.query.iter.Iter;
 
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.objectbank.TokenizerFactory;
+import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.process.CoreLabelTokenFactory;
+import edu.stanford.nlp.process.PTBTokenizer;
+import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreePrint;
+
 /**
  * 
  */
 public class BotCommandProcessor
 {
 	private static final boolean SINGLE_BOT_ONLY = true;
+	
+	private static LexicalizedParser lp = new LexicalizedParser("grammar/englishPCFG.ser.gz");
+    private static TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
 	
 	public static void main(String[] args)
 	{
@@ -41,7 +56,7 @@ public class BotCommandProcessor
 		}
 
 //		BasicConfigurator.configure();
-		Logger.getRootLogger().setLevel(Level.TRACE);
+		Logger.getRootLogger().setLevel(Level.INFO);
 //		_nrQueries = 0;
 //		long t0 = System.currentTimeMillis();
 //		create("TestBot", new BotCommandPrinter());
@@ -98,7 +113,7 @@ public class BotCommandProcessor
 	static Logger _logger;
 	static
 	{
-//		BasicConfigurator.configure();
+		BasicConfigurator.configure();
 		_logger = Logger.getLogger(BotCommandProcessor.class);
 //		Logger.getRootLogger().setLevel(Level.TRACE);
 	}
@@ -521,7 +536,10 @@ public class BotCommandProcessor
 		String grammar = "";
 		try
 		{
-			 grammar = "<grammar>"+Parser.parse(text).constituentXML+"</grammar>";
+			String grammarText = parseGrammar(text);
+			String grammarText2 = Parser.parse(text).constituentXML;
+		    _logger.info(grammarText2);
+			 grammar = "<grammar>"+grammarText+"</grammar>";
 		}
 		catch (Exception exception)
 		{
@@ -531,6 +549,28 @@ public class BotCommandProcessor
 		_logger.debug("Grammar: \t"+(t1-t0)+" ms.");
 		String event = "<event type='say' in=\""+text+"\" from='"+entityName+"' dateTime='"+CURRENT_TIME()+"' persistent='"+persistent+"'>" + grammar + "</event>";
 		return event;
+	}
+	
+	private static String parseGrammar(String text)
+	{
+	    List<CoreLabel> rawWords2 = 
+	      tokenizerFactory.getTokenizer(new StringReader(text)).tokenize();
+	    Tree parse = lp.apply(rawWords2);
+
+	    TreePrint tp = new TreePrint("penn");
+	    StringWriter stringWriter = new StringWriter();
+	    PrintWriter pw = new PrintWriter(stringWriter);
+	    tp.printTree(parse,pw);
+	    String output =  stringWriter.toString();
+	    output = output.replace("&lt;", "<");
+	    output = output.replace("&gt;", ">");
+	    output = output.replace("<.> .</.>", "");
+	    output = output.replace("<.> ?</.>", "");
+	    output = output.replace("<,> ,</,>", "");
+//	    output = output.replace(".>", "PUNCTUATION>");
+//	    output = output.replace("?>", "QUESTION>");
+	    _logger.info(output);
+	    return output;
 	}
 	
 	public static void say(String text)

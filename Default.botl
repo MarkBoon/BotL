@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<BOT-L>
+	<if> fn:not(fn:matches(%substitutes,'true')) </if>
+	<then>
+		<substitute chat-pattern="_ blue mars _" with="$1 blue-mars $2"/>	
+		<matches chat-pattern="_ avatar reality _"><srai>'$1 avatar-reality $2'</srai></matches>	
+		<matches chat-pattern="_ second life _"><srai>'$1 second-life $2'</srai></matches>	
+		
+		<matches pattern="'(ll|s|d|re|ve|t|m) ">
+			<matches chat-pattern="_ you'd _">		<srai>'$1 you would $2'</srai></matches>
+			<matches chat-pattern="_ you're _">		<srai>'$1 you are $2'</srai></matches>
+			<matches chat-pattern="_ you've _">		<srai>'$1 you have $2'</srai></matches>
+			<matches chat-pattern="_ you'll _">		<srai>'$1 you will $2'</srai></matches>
+			<matches chat-pattern="_ didn't _">		<srai>'$1 did not $2'</srai></matches>
+			<matches chat-pattern="_ couldn't _">	<srai>'$1 could not $2'</srai></matches>
+			<matches chat-pattern="_ ain't _">		<srai>'$1 is not $2'</srai></matches>
+			<matches chat-pattern="_ isn't _">		<srai>'$1 is not $2'</srai></matches>
+			<matches chat-pattern="_ it's _">		<srai>'$1 it is $2'</srai></matches>
+			<matches chat-pattern="_ aren't _">		<srai>'$1 are not $2'</srai></matches>
+			<matches chat-pattern="_ where's _">	<srai>'$1 where is $2'</srai></matches>
+			<matches chat-pattern="_ haven't _">	<srai>'$1 have not $2'</srai></matches>
+			<matches chat-pattern="_ hasn't _">		<srai>'$1 has not $2'</srai></matches>
+			<matches chat-pattern="_ weren't _">	<srai>'$1 were not $2'</srai></matches>
+			<matches chat-pattern="_ can't _">		<srai>'$1 can not $2'</srai></matches>
+			<matches chat-pattern="_ who's _">		<srai>'$1 who is $2'</srai></matches>
+			<matches chat-pattern="_ how's _">		<srai>'$1 how is $2'</srai></matches>
+			<matches chat-pattern="_ how'd _">		<srai>'$1 how did $2'</srai></matches>
+			<matches chat-pattern="_ what's _">		<srai>'$1 what is $2'</srai></matches>
+			<matches chat-pattern="_ that's _">		<srai>'$1 that is $2'</srai></matches>
+			<matches chat-pattern="_ there's _">	<srai>'$1 there is $2'</srai></matches>
+			<matches chat-pattern="_ doesn't _">	<srai>'$1 does not $2'</srai></matches>
+			<matches chat-pattern="_ don't _">		<srai>'$1 do not $2'</srai></matches>
+			<matches chat-pattern="_ won't _">		<srai>'$1 will not $2'</srai></matches>
+			<matches chat-pattern="_ they're _">	<srai>'$1 they are $2'</srai></matches>
+			<matches chat-pattern="_ wasn't _">		<srai>'$1 was not $2'</srai></matches>
+			<matches chat-pattern="_ hadn't _">		<srai>'$1 had not $2'</srai></matches>
+			<matches chat-pattern="_ wouldn't _">	<srai>'$1 would not $2'</srai></matches>
+			<matches chat-pattern="_ shouldn't _">	<srai>'$1 should not $2'</srai></matches>
+			<matches chat-pattern="_ we'll _">		<srai>'$1 we will $2'</srai></matches>
+			<matches chat-pattern="_ he'll _">		<srai>'$1 he will $2'</srai></matches>
+			<matches chat-pattern="_ i'll _">		<srai>'$1 i will $2'</srai></matches>
+			<matches chat-pattern="_ i'm _">		<srai>'$1 i am $2'</srai></matches>
+			<matches chat-pattern="_ i've _">		<srai>'$1 i have $2'</srai></matches>
+			<matches chat-pattern="_ i'd _">		<srai>'$1 i had $2'</srai></matches>
+			<matches chat-pattern="_ we're _">		<srai>'$1 we are $2'</srai></matches>
+			<matches chat-pattern="_ we've _">		<srai>'$1 we have $2'</srai></matches>
+			<matches chat-pattern="_ she's _">		<srai>'$1 she is $2'</srai></matches>
+			<matches chat-pattern="_ she'd _">		<srai>'$1 she would $2'</srai></matches>
+			<matches chat-pattern="_ he's _">		<srai>'$1 he is $2'</srai></matches>
+			<matches chat-pattern="_ he'd _">		<srai>'$1 he would $2'</srai></matches>
+		</matches>
+	
+		<matches chat-pattern="_ gonna _">			<srai>'$1 going to $2'</srai></matches>	
+		<matches chat-pattern="_ wanna _">			<srai>'$1 want to $2'</srai></matches>	
+		<matches chat-pattern="_ isnt _">			<srai>'$1 is not $2'</srai></matches>
+		<matches chat-pattern="_ cannot _">			<srai>'$1 can not $2'</srai></matches>
+		<matches chat-pattern="_ didnt _">			<srai>'$1 did not $2'</srai></matches>
+		<matches chat-pattern="_ is there a way _">	<srai>'$1 how $2'</srai></matches>
+		<execute>
+			bot:transientSet('substitutes','true')
+		</execute>
+	</then>
+</BOT-L>

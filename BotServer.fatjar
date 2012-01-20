@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sun Jan 08 15:24:03 HST 2012
+onejar.license.required=true
+manifest.classpath=.
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=BotServer.jar
+manifest.mergeall=true
+manifest.mainclass=com.avatar_reality.ai.RemoteBotServer
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=

@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/include.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/substitute.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/get-args.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/global-vars.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/chat-pattern.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/call-functions.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/use-functions.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/transient-vars.xsl" ?>
+<BOT-L>
+	<include ref="file:Declarations.botl"/>
+
+	<declare>
+		<namespace name="om">
+			declare namespace om = "java:com.avatar_reality.ai.OntologyManager"
+		</namespace>
+		<function name="local:restingTime">
+			declare updating function local:restingTime( $durationString as xs:string)
+			{
+				let $now := fn:current-dateTime()
+				let $duration := xs:dayTimeDuration($durationString)
+				let $t := xs:string(xs:dateTime($now + $duration))
+				return ( local:set('endRestingTime', $t) )					
+			}
+		</function>
+		<function name='ar:assertIsa'>
+			declare function ar:assertIsa ( $subject as xs:string, $object as xs:string )
+			{
+				let $om := bot:getOntologyManager()
+				return (bot:print(fn:concat(%_botName_,': ')), bot:print(fn:concat($subject,' ',$object)), om:addSubClass($om, $subject, $object), om:save($om))
+			}
+		</function>
+		<function name='ar:askIsa'>
+			declare function ar:askIsa ( $subject as xs:string, $object as xs:string )
+			{
+				let $om := bot:getOntologyManager()
+				return (bot:print(fn:concat(%_botName_,': ')), bot:print(fn:concat($subject,' ',$object)), om:isa($om, $subject, $object))
+			}
+		</function>
+		<function name='ar:printOntology'>
+			declare function ar:printOntology()
+			{
+				let $ontology := collection()/BOT-L/*:Ontology
+				return (bot:print(fn:concat('Ontology: ',$ontology)))
+			}
+		</function>
+	</declare>
+	<trigger_set>
+		<trigger name="receiveInitEvent">
+		</trigger>
+		<trigger name="receiveTimerEvent">
+		</trigger>
+		<trigger name="receiveSay">
+			<if>
+				<use name="ar:distance"/>
+				fn:boolean (ar:distance(%_from_) &lt; 5)
+			</if>
+			<then>
+				<matches chat-pattern="~a _ is ~a _">
+					<execute>
+						let $noun1 := xs:string(collection()/BOT-L/event[1]/grammar/S/NP/n)
+						let $noun2 := xs:string(collection()/BOT-L/event[1]/grammar/S/VP/NP/n)
+						return ( 
+							if (fn:boolean($noun1) and fn:boolean($noun2)) then
+								(bot:transientSet('subject', $noun1), bot:transientSet('object', $noun2))
+							else
+								fn:false()
+						)
+					</execute>
+					<if> fn:boolean(%subject) and fn:boolean(%object) </if>
+					<then>
+						<return>
+							<use name="ar:assertIsa"/>
+							ar:assertIsa(%subject, %object)
+						</return>
+	 				</then>
+				</matches>
+				<matches chat-pattern="is ~a _ ~a _">
+					<execute>
+						let $noun1 := xs:string(collection()/BOT-L/event[1]/grammar/S/NP[1]/n)
+						let $noun2 := xs:string(collection()/BOT-L/event[1]/grammar/S/NP[2]/n)
+						return ( 
+							if (fn:boolean($noun1) and fn:boolean($noun2)) then
+								(bot:transientSet('subject', $noun1), bot:transientSet('object', $noun2))
+							else
+								fn:false()
+						)
+					</execute>
+					<if> fn:boolean(%subject) and fn:boolean(%object) </if>
+					<then>
+						<return>
+							<use name="ar:askIsa"/>
+							ar:askIsa(%subject, %object)
+						</return>
+	 				</then>
+				</matches>
+			</then>
+		</trigger>
+	</trigger_set>
+	<memory>
+	</memory>
+	<Ontology xmlns="http://www.w3.org/2002/07/owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xml:base="http://www.w3.org/2002/07/owl#">
+	    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+	    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+	    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+	    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+	</Ontology>
+</BOT-L>

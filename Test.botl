@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/include.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/substitute.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/get-args.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/global-vars.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/chat-pattern.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/use-functions.xsl" ?>
+<?xml-stylesheet type="text/xsl" href="file:xsl/transient-vars.xsl" ?>
+<BOT-L>
+	<include ref="file:Declarations.botl"/>
+
+	<declare>
+		<variable name='~ynverb' value='(am|is|are|will|would|could|should|do|does|must|can)'/>
+		
+		<function name='ar:fortune-tell'>
+			<use name="ar:choose"/>
+			<use name="ar:say"/>
+			declare function ar:fortune-tell ( $phrase as xs:string )
+			{
+				let $prefix := ar:choose(
+					("Absolutely, ", "It's likely that ", "The odds are good that ", "There's a fairly good chance that ", "There's a light chance that ",
+					"It's uncertain that ", "Chances are not good that ", "It's doubtful that ", "It's unlikely that ", "There's no way that ")
+				)
+				return ar:say(fn:concat(fn:normalize-space(fn:concat($prefix,$phrase)),'.'))
+			}
+		</function>
+	</declare>
+
+	<trigger_set>
+		<trigger name="receiveInitEvent">
+		</trigger>
+		<trigger name="receiveSay">
+		
+				<include ref="file:Default.botl"/>
+			
+				<matches chat-pattern="\bhelp\b" ar-say="Just ask me any question that can be answered with 'yes' or 'no'."/>
+				<matches chat-pattern="~hi">
+	 				<return>
+	 					<use name="ar:choosePhrase"/>
+	 					ar:choosePhrase(
+							(
+								"Hi. I am the fortune teller. Ask me a question and I will tell you whether it will come true. Start by saying 'tell me'",
+								"Greetings! My friends call me Rosie Future because some say I can foretell what is to come. Do you want to test that?  Just ask me any question that can be answered with 'yes' or 'no'."						
+							)
+						)
+					</return>
+				</matches>
+				<matches chat-pattern="~bye">
+	 				<return>
+	 					<use name="ar:choosePhrase"/>
+	 					ar:choosePhrase(
+							(
+								"Bye. Don't forget what I told you.",
+								"See you later. Remember..."						
+							)
+						)
+					</return>
+				</matches>
+				<matches chat-pattern="tell me (if|whether) _"> <return> <use name="ar:fortune-tell"/>  ar:fortune-tell('$1') </return> </matches>
+				<matches chat-pattern="tell me _">
+					<execute>
+						local:set('tell','true')
+					</execute>
+	 				<srai>'$1'</srai>
+				</matches>
+				
+<!-- 				<if> (#tell = 'true') </if>
+				<then> -->
+
+					<substitute chat-pattern="_ am I _" 	with="$1 are you $2"/>
+					<substitute chat-pattern="_ I am _"		with="$1 you are $2"/>
+					<substitute chat-pattern="_ if I _"		with="$1 if you $2"/>
+					<substitute chat-pattern="~ynverb I _"	with="$1 you $2"/>
+					<substitute chat-pattern="I ~ynverb _"	with="you $1 $2"/>
+					<substitute chat-pattern="_ me _"		with="$1 you $2"/>
+					<substitute chat-pattern="_ my _"		with="$1 your $2"/>
+					<substitute chat-pattern="_ mine _"		with="$1 yours $2"/>
+					
+					<matches chat-pattern="do you think (that)? _">		<return> <use name="ar:fortune-tell"/> ar:fortune-tell('$2') </return> </matches>
+					<substitute chat-pattern="_ think I _"	with="$1 think you $2"/>
+					
+					<matches chat-pattern="is there (a)? chance (that)? _">		<return><use name="ar:fortune-tell"/> ar:fortune-tell('$3') </return> </matches>
+					<matches chat-pattern="~ynverb it _">		<return><use name="ar:fortune-tell"/> ar:fortune-tell('it $1 $2') </return> </matches>
+					
+					<substitute chat-pattern="_ ~ynverb _"	with="$2 $3"/>
+					<matches chat-pattern=".*~ynverb.*">
+						<execute>
+							let $grammar1 := xs:string(collection()/BOT-L/event[1]/grammar/S/NP[1])
+							let $grammar2 := xs:string(collection()/BOT-L/event[1]/grammar/S/NP[1]/following-sibling::*)
+							return ( 
+								if (fn:boolean($grammar1) and fn:boolean($grammar2)) then
+									(bot:transientSet('subject', $grammar1), bot:transientSet('rest', $grammar2), bot:print($grammar1), bot:print($grammar2))
+								else
+									fn:false()
+							)
+						</execute>
+						<if> fn:boolean(%subject) and fn:boolean(%rest) </if>
+						<then>
+							<execute>
+								bot:print(" $1 ")
+							</execute>
+							<return>
+								<use name="ar:fortune-tell"/>
+								ar:fortune-tell(fn:concat(%subject," $1 ",%rest))
+							</return>
+		 				</then>
+					</matches>
+<!-- 				</then> -->
+					<execute>
+	 					<use name="ar:choosePhrase"/>
+	 					ar:choosePhrase(
+							(
+								"I don't know what to say to that.",
+								"Try asking a question that can be answered by 'yes' or 'no'.",
+								"That is interesting.",					
+								"I don't know.",	
+								"I'm not sure I'm in the modd for that.",	
+								"You got to find better things to ask.",					
+								"Is that even a question?",				
+								"Yes?",				
+								"No?",				
+								"Maybe",				
+								"Aren't you pushing your luck today?",				
+								"You can say 'help' for instructions."			
+							)
+						)
+					</execute>
+		</trigger>
+		<trigger name="receiveTimerEvent">
+		</trigger>
+	</trigger_set>
+	<memory>
+	</memory>
+</BOT-L>

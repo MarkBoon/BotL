@@ -1,3 +1,4 @@
+#Transfer files
 cp *.botl transfer
 cp BotServer.jar transfer
 cp BotL/botl.server.war transfer

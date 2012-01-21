@@ -5,12 +5,12 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="lib/saxon9he.jar"/>
 	<classpathentry kind="lib" path="lib/JLinkGrammar.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/pellet-2.2.2"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/owlapi-bin.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-core.jar"/>
 	<classpathentry kind="lib" path="lib/pellet-explanation.jar"/>
 	<classpathentry kind="lib" path="lib/BaseX65.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/stanford-parser-2012-01-06"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

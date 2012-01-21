@@ -35,7 +35,18 @@
 			
 				<matches chat-pattern="\bhelp\b" ar-say="Just ask me any question that can be answered with 'yes' or 'no'."/>
 				<matches chat-pattern="~hi">
+					<execute>
+						let $name := local:personalGet('name')
+						return ( bot:transientSet('name', $name) )
+					</execute>
+					<if> fn:not(fn:matches(%name,'not found')) </if>
+					<then>
 	 				<return>
+	 					let $name := %name
+						return ( bot:say(fn:concat("Hi ",$name)) )
+					</return>
+	 				</then>
+					<return>
 	 					<use name="ar:choosePhrase"/>
 	 					ar:choosePhrase(
 							(
@@ -56,6 +67,20 @@
 						)
 					</return>
 				</matches>
+				<matches chat-pattern="my name is _">
+					<execute>
+						local:personalSet('name','$1')
+					</execute>
+					<execute>
+						let $name := local:personalGet("name")
+						return ( bot:transientSet('name', $name) )
+					</execute>
+	 				<return>
+	 					let $name := %name
+						return ( bot:say(fn:concat("Hi ",$name)) )
+					</return>
+				</matches>
+									
 				<matches chat-pattern="tell me (if|whether) _"> <return> <use name="ar:fortune-tell"/>  ar:fortune-tell('$1') </return> </matches>
 				<matches chat-pattern="tell me _">
 					<execute>

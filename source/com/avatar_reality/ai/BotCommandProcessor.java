@@ -241,7 +241,7 @@ public class BotCommandProcessor
 			new XQueryX(insertQuery).execute(context);
 			
 			// Copy memory
-			deleteQuery = "delete nodes collection('"+userID+"')/BOT-L/memory";
+/*			deleteQuery = "delete nodes collection('"+userID+"')/BOT-L/memory";
 			_logger.trace("Delete query: "+deleteQuery);
 			new XQueryX(deleteQuery).execute(context);
 			insertQuery = "for $memory in doc('"+loadFile+"')/BOT-L/memory "+
@@ -250,6 +250,7 @@ public class BotCommandProcessor
 			"into doc('"+userID+"')/BOT-L)";
 			_logger.trace("Insert query: "+insertQuery);
 			new XQueryX(insertQuery).execute(context);
+*/
 			
 //			// Copy ontology
 //			deleteQuery = "delete nodes collection('"+userID+"')/BOT-L/*:Ontology";
@@ -567,6 +568,8 @@ public class BotCommandProcessor
 	    output = output.replace("<.> .</.>", "");
 	    output = output.replace("<.> ?</.>", "");
 	    output = output.replace("<,> ,</,>", "");
+	    output = output.replace("PRP$", "PRP-S");
+	    output = output.replace("WP$", "WP-S");
 //	    output = output.replace(".>", "PUNCTUATION>");
 //	    output = output.replace("?>", "QUESTION>");
 	    _logger.info(output);

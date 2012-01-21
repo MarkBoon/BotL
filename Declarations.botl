@@ -27,6 +27,24 @@
 					insert node element variable { attribute name {$name} , attribute value {$value} } into collection()/BOT-L/memory
 			}
 		</function>
+		<function name='local:personalGet' always="true">
+			declare function local:personalGet ( $arg as xs:string ) as xs:string
+			{
+				let $id as xs:string := bot:transientGet('_from_')
+				let $result := collection()/BOT-L/memory/personal[@name=$arg and @id=$id]/@value
+				return ( if ($result) then $result/string() else fn:concat('"',fn:concat($arg,' not found"')) )
+			}
+		</function>
+		<function name='local:personalSet' always="true">
+			declare updating function local:personalSet ( $name as xs:string, $value as xs:string )
+			{
+				let $id  as xs:string := bot:transientGet('_from_')
+				return ( if (collection()/BOT-L/memory/personal[@name=$name and @id=$id]) then
+					replace value of node collection()/BOT-L/memory/personal[@name=$name and @id=$id]/@value with $value
+				else
+					insert node element personal { attribute name {$name} , attribute id {$id} , attribute value {$value} } into collection()/BOT-L/memory )
+			}
+		</function>
 		<function name='local:args1' always="true">
 			declare function local:args1 ( $arg as xs:string ) as xs:string
 			{

@@ -110,20 +110,17 @@
 					<substitute chat-pattern="_ ~ynverb _"	with="$2 $3"/>
 					<matches chat-pattern=".*~ynverb.*">
 						<execute>
-							let $grammar1 := xs:string(collection()/BOT-L/event[1]/grammar/ROOT/SQ/NP[1])
-							let $grammar2 := xs:string(collection()/BOT-L/event[1]/grammar/ROOT/SQ/NP[1]/following-sibling::*)
+							let $grammar1 := xs:string(collection()/BOT-L/event[1]/grammar/ROOT/SQ/NP[1] | collection()/BOT-L/event[1]/grammar/ROOT/SINV/NP[1])
+							let $grammar2 := xs:string(collection()/BOT-L/event[1]/grammar/ROOT/SQ/NP[1]/following-sibling::* | collection()/BOT-L/event[1]/grammar/ROOT/SINV/NP[1]/following-sibling::*)
 							return ( 
 								if (fn:boolean($grammar1) and fn:boolean($grammar2)) then
-									(bot:transientSet('subject', $grammar1), bot:transientSet('rest', $grammar2), bot:print($grammar1), bot:print($grammar2))
+									(bot:transientSet('subject', $grammar1), bot:transientSet('rest', $grammar2))
 								else
 									fn:false()
 							)
 						</execute>
 						<if> fn:boolean(%subject) and fn:boolean(%rest) </if>
 						<then>
-							<execute>
-								bot:print(" $1 ")
-							</execute>
 							<return>
 								<use name="ar:fortune-tell"/>
 								ar:fortune-tell(fn:concat(%subject," $1 ",%rest))

@@ -1,5 +1,5 @@
 #Transfer files
-cp *.botl transfer
-cp BotServer.jar transfer
-cp BotL/botl.server.war transfer
-rsync -avPe 'ssh -i tetris_stars.pem' transfer ubuntu@ec2-107-21-174-126.compute-1.amazonaws.com:~/
+cp *.botl botl.server
+cp BotServer.jar botl.server
+rsync -avPe 'ssh -i me.pem' botl.server ec2-user@ec2-23-20-17-195.compute-1.amazonaws.com:~/
+rsync -tve 'ssh -i me.pem' *.war ec2-user@ec2-23-20-17-195.compute-1.amazonaws.com:/var/lib/tomcat6/webapps

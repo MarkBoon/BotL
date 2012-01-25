@@ -183,6 +183,10 @@ public class BotCommandProcessor
 				_logger.trace("Insert query: "+insertQuery);
 				String result = new XQueryX(insertQuery).execute(_context);
 				_logger.trace("Result: "+result);
+				insertQuery = "insert node <memory> into doc('"+userID+"')/BOT-L";
+				_logger.trace("Insert query: "+insertQuery);
+				result = new XQueryX(insertQuery).execute(_context);
+				_logger.trace("Result: "+result);
 			}
 			catch (BaseXExceptionX nestedException)
 			{

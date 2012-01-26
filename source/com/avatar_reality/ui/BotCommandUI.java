@@ -16,17 +16,34 @@ import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Logger;
+import org.apache.log4j.WriterAppender;
+import org.apache.log4j.spi.ErrorHandler;
+import org.apache.log4j.spi.Filter;
+import org.apache.log4j.spi.LoggingEvent;
+
+import com.avatar_reality.ai.BaseXExceptionX;
 import com.avatar_reality.ai.BotCommandPrinter;
 import com.avatar_reality.ai.BotCommandProcessor;
+import com.avatar_reality.ai.XQueryX;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.StringWriter;
 
 public class BotCommandUI {
 
 	private JFrame frame;
 	private JTextField textField;
-
+	private JTextArea textArea_3;
+	private JTextArea textArea_1;
+	private JTextArea textArea_2;
+	private JTextArea textArea;
+	
+	private static StringWriter writer = new StringWriter();
+	
 	/**
 	 * Launch the application.
 	 */
@@ -43,6 +60,11 @@ public class BotCommandUI {
 
 					BotCommandProcessor.create("TestBot", new BotCommandPrinter());
 					BotCommandProcessor.getSingleton().loadTriggers(args[0]);
+					WriterAppender appender = new WriterAppender();
+					appender.setWriter(writer);
+					Layout layout = ((Appender)Logger.getRootLogger().getAllAppenders().nextElement()).getLayout();
+					appender.setLayout(layout);
+					Logger.getRootLogger().addAppender(appender);
 				}
 				catch (Exception e) 
 				{
@@ -114,7 +136,8 @@ public class BotCommandUI {
 		panel_2.add(textField);
 		textField.setColumns(10);
 		
-		JTextArea textArea_3 = new JTextArea();
+		textArea_3 = new JTextArea();
+		textArea_3.setLineWrap(true);
 		textArea_3.setEditable(false);
 		sl_panel_2.putConstraint(SpringLayout.NORTH, textArea_3, 30, SpringLayout.NORTH, textField);
 		sl_panel_2.putConstraint(SpringLayout.WEST, textArea_3, 0, SpringLayout.WEST, panel_2);
@@ -135,7 +158,8 @@ public class BotCommandUI {
 		sl_panel_3.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, panel_3);
 		panel_3.add(scrollPane);
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
+		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		scrollPane.setViewportView(textArea);
 		
@@ -160,11 +184,19 @@ public class BotCommandUI {
 		panel_4.setLayout(sl_panel_4);
 		
 		JButton btnNewButton = new JButton("Execute");
+		btnNewButton.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
+				handleExecute();
+			}
+		});
 		sl_panel_4.putConstraint(SpringLayout.WEST, btnNewButton, 0, SpringLayout.WEST, panel_4);
 		sl_panel_4.putConstraint(SpringLayout.SOUTH, btnNewButton, 0, SpringLayout.SOUTH, panel_4);
 		panel_4.add(btnNewButton);
 		
-		JTextArea textArea_2 = new JTextArea();
+		textArea_2 = new JTextArea();
+		textArea_2.setLineWrap(true);
 		sl_panel_4.putConstraint(SpringLayout.NORTH, textArea_2, 0, SpringLayout.NORTH, panel_4);
 		sl_panel_4.putConstraint(SpringLayout.WEST, textArea_2, 0, SpringLayout.WEST, panel_4);
 		sl_panel_4.putConstraint(SpringLayout.SOUTH, textArea_2, -6, SpringLayout.NORTH, btnNewButton);
@@ -184,7 +216,8 @@ public class BotCommandUI {
 		sl_panel_5.putConstraint(SpringLayout.EAST, scrollPane_1, 0, SpringLayout.EAST, panel_5);
 		panel_5.add(scrollPane_1);
 		
-		JTextArea textArea_1 = new JTextArea();
+		textArea_1 = new JTextArea();
+		textArea_1.setLineWrap(true);
 		textArea_1.setEditable(false);
 		scrollPane_1.setViewportView(textArea_1);
 	}
@@ -197,6 +230,34 @@ public class BotCommandUI {
 		long t1 = System.currentTimeMillis();
 		String output = BotCommandProcessor.getSingleton().receiveSayAction("test_bot", input);
 		long t2 = System.currentTimeMillis();
-		System.out.println("Processing time: "+(t2-t1)+" ms.");		
+		System.out.println("Processing time: "+(t2-t1)+" ms.");	
+		getTextArea_3().setText(output);
+		getTextArea().setText(writer.getBuffer().toString());
+	}
+	
+	private void handleExecute()
+	{
+		String queryString = getTextArea_2().getText();
+		try 
+		{
+			getTextArea_1().setText(new XQueryX(queryString).execute(BotCommandProcessor.getSingleton().getContext()));
+		} 
+		catch (BaseXExceptionX e) 
+		{
+			getTextArea_1().setText(getTextArea_1().getText() + e.getMessage());
+		}
+	}
+	
+	public JTextArea getTextArea_3() {
+		return textArea_3;
+	}
+	public JTextArea getTextArea_1() {
+		return textArea_1;
+	}
+	public JTextArea getTextArea_2() {
+		return textArea_2;
+	}
+	public JTextArea getTextArea() {
+		return textArea;
 	}
 }

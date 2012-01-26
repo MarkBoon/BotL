@@ -214,7 +214,7 @@ public class BotCommandProcessor
 		_botCommandHandler = handler;
 	}
 	
-	private Context getContext()
+	public Context getContext()
 	{
 		return _context;
 	}

@@ -10,7 +10,7 @@
 	<include ref="file:Declarations.botl"/>
 
 	<declare>
-		<variable name='~ynverb' value='(am|is|are|will|would|could|should|do|does|must|can)'/>
+		<variable name='~ynverb' value='(am|is|are|will|would|could|shall|should|do|does|must|can)'/>
 		
 		<function name='ar:fortune-tell'>
 			<use name="ar:choose"/>
@@ -41,10 +41,10 @@
 					</execute>
 					<if> fn:not(fn:matches(%name,'not found')) </if>
 					<then>
-	 				<return>
-	 					let $name := %name
-						return ( bot:say(fn:concat("Hi ",$name)) )
-					</return>
+	 					<return>
+	 						let $name := %name
+							return ( bot:say(fn:concat("Hi ",$name)) )
+						</return>
 	 				</then>
 					<return>
 	 					<use name="ar:choosePhrase"/>
@@ -93,6 +93,7 @@
 				<then> -->
 
 					<substitute chat-pattern="_ am I _" 	with="$1 are you $2"/>
+					<substitute chat-pattern="am I _" 		with="are you $1"/>
 					<substitute chat-pattern="_ I am _"		with="$1 you are $2"/>
 					<substitute chat-pattern="_ if I _"		with="$1 if you $2"/>
 					<substitute chat-pattern="~ynverb I _"	with="$1 you $2"/>
@@ -101,20 +102,42 @@
 					<substitute chat-pattern="_ my _"		with="$1 your $2"/>
 					<substitute chat-pattern="_ mine _"		with="$1 yours $2"/>
 					
+					<matches chat-pattern="predict (that|whether)? _">	<return> <use name="ar:fortune-tell"/> ar:fortune-tell('$2') </return> </matches>
+					<matches chat-pattern="do you see (that)? _">		<return> <use name="ar:fortune-tell"/> ar:fortune-tell('$2') </return> </matches>
+					<matches chat-pattern="do you foresee (that)? _">	<return> <use name="ar:fortune-tell"/> ar:fortune-tell('$2') </return> </matches>
 					<matches chat-pattern="do you think (that)? _">		<return> <use name="ar:fortune-tell"/> ar:fortune-tell('$2') </return> </matches>
+					<matches chat-pattern="do you believe (that)? _">	<return> <use name="ar:fortune-tell"/> ar:fortune-tell('$2') </return> </matches>
 					<substitute chat-pattern="_ think I _"	with="$1 think you $2"/>
 					
-					<matches chat-pattern="is there (a)? chance (that)? _">		<return><use name="ar:fortune-tell"/> ar:fortune-tell('$3') </return> </matches>
+					<matches chat-pattern="is there (a)? chance (that)? _">				<return><use name="ar:fortune-tell"/> ar:fortune-tell('$3') </return> </matches>
+					<matches chat-pattern="is there (a)? possibility (that)? _">		<return><use name="ar:fortune-tell"/> ar:fortune-tell('$3') </return> </matches>
+					<matches chat-pattern="is it possible (that)? _">					<return><use name="ar:fortune-tell"/> ar:fortune-tell('$2') </return> </matches>
 					<matches chat-pattern="~ynverb it _">		<return><use name="ar:fortune-tell"/> ar:fortune-tell('it $1 $2') </return> </matches>
 					
-					<substitute chat-pattern="_ ~ynverb _"	with="$2 $3"/>
-					<matches chat-pattern=".*~ynverb.*">
+					<!-- <substitute chat-pattern="_ ~ynverb _"	with="$2 $3"/> -->
+					<matches chat-pattern=".*?~ynverb.*">
+						<execute>
+							let $pre-sentence := xs:string(collection()/BOT-L/event[1]/grammar/ROOT/SQ/S[1])
+							let $followup := fn:string-join(collection()/BOT-L/event[1]/grammar/ROOT/SQ/S[1]/following-sibling::*,"")
+							return ( 
+								if (fn:boolean($pre-sentence) and fn:boolean($followup)) then
+									(bot:print($pre-sentence), bot:transientSet('pre-sentence', $pre-sentence), bot:print($followup), bot:transientSet('followup', $followup))
+								else
+									fn:false()
+							)
+						</execute>
+						<if> fn:boolean(%pre-sentence) and fn:boolean(%followup) </if>
+						<then>
+							<srai>%followup</srai>
+		 				</then>
+					</matches>
+					<matches chat-pattern=".*?~ynverb.*">
 						<execute>
 							let $grammar1 := xs:string(collection()/BOT-L/event[1]/grammar/ROOT/SQ/NP[1] | collection()/BOT-L/event[1]/grammar/ROOT/SINV/NP[1])
 							let $grammar2 := xs:string(collection()/BOT-L/event[1]/grammar/ROOT/SQ/NP[1]/following-sibling::* | collection()/BOT-L/event[1]/grammar/ROOT/SINV/NP[1]/following-sibling::*)
 							return ( 
 								if (fn:boolean($grammar1) and fn:boolean($grammar2)) then
-									(bot:transientSet('subject', $grammar1), bot:transientSet('rest', $grammar2))
+									(bot:print("$1"), bot:print($grammar1), bot:transientSet('subject', $grammar1), bot:print($grammar2), bot:transientSet('rest', $grammar2))
 								else
 									fn:false()
 							)

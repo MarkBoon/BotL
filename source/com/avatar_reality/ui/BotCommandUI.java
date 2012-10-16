@@ -3,14 +3,10 @@ package com.avatar_reality.ui;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import java.awt.GridLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JPanel;
-import javax.swing.JTextPane;
-import javax.swing.JEditorPane;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-import java.awt.BorderLayout;
 import javax.swing.SpringLayout;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
@@ -18,11 +14,9 @@ import javax.swing.JScrollPane;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.WriterAppender;
-import org.apache.log4j.spi.ErrorHandler;
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
 
 import com.avatar_reality.ai.BaseXExceptionX;
 import com.avatar_reality.ai.BotCommandPrinter;
@@ -33,8 +27,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.StringWriter;
 
-public class BotCommandUI {
-
+public class BotCommandUI 
+{
 	private JFrame frame;
 	private JTextField textField;
 	private JTextArea textArea_3;
@@ -63,6 +57,7 @@ public class BotCommandUI {
 					WriterAppender appender = new WriterAppender();
 					appender.setWriter(writer);
 					Layout layout = ((Appender)Logger.getRootLogger().getAllAppenders().nextElement()).getLayout();
+					Logger.getRootLogger().setLevel(Level.ALL);
 					appender.setLayout(layout);
 					Logger.getRootLogger().addAppender(appender);
 				}
@@ -80,7 +75,6 @@ public class BotCommandUI {
 	public BotCommandUI() 
 	{
 		initialize();
-
 	}
 
 	/**
@@ -159,7 +153,6 @@ public class BotCommandUI {
 		panel_3.add(scrollPane);
 		
 		textArea = new JTextArea();
-		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		scrollPane.setViewportView(textArea);
 		
@@ -217,7 +210,6 @@ public class BotCommandUI {
 		panel_5.add(scrollPane_1);
 		
 		textArea_1 = new JTextArea();
-		textArea_1.setLineWrap(true);
 		textArea_1.setEditable(false);
 		scrollPane_1.setViewportView(textArea_1);
 	}
@@ -248,16 +240,20 @@ public class BotCommandUI {
 		}
 	}
 	
-	public JTextArea getTextArea_3() {
+	public JTextArea getTextArea_3() 
+	{
 		return textArea_3;
 	}
-	public JTextArea getTextArea_1() {
+	public JTextArea getTextArea_1() 
+	{
 		return textArea_1;
 	}
-	public JTextArea getTextArea_2() {
+	public JTextArea getTextArea_2() 
+	{
 		return textArea_2;
 	}
-	public JTextArea getTextArea() {
+	public JTextArea getTextArea() 
+	{
 		return textArea;
 	}
 }

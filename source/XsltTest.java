@@ -22,6 +22,7 @@ public class XsltTest
 			BufferedReader reader = new BufferedReader(new FileReader(processedFile));
 			while (reader.ready())
 				System.out.println(reader.readLine());
+			reader.close();
 		}
 		catch (Exception exception)
 		{

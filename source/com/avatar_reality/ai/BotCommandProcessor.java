@@ -11,8 +11,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.sf.jlinkgrammar.Parser;
 
@@ -36,7 +34,6 @@ import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreePrint;
-import edu.stanford.nlp.util.StringUtils;
 
 /**
  * 
@@ -586,9 +583,6 @@ public class BotCommandProcessor
 	
 	public static void say(String text)
 	{
-		
-		if (END_PUNCTUATION.contains(String.valueOf(text.charAt(text.length()-1))))
-			text = StringUtils.capitalize(text);
 		String userID = getSingleton().getUserID();
 		String event = "<event type='say' in=\""+text+"\" from='"+userID+"' dateTime='"+CURRENT_TIME()+"' persistent='true'/>";
 		String insertEventQuery = "insert node "+event+" as first into collection('"+userID+"')/BOT-L";

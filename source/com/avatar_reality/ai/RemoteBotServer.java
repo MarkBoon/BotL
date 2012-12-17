@@ -5,7 +5,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 public class RemoteBotServer implements RemoteBotInterface

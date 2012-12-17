@@ -77,6 +77,14 @@ public class WordDefinition
 		return  synonyms.get(0)+typeString+" - ["+synonym+"]";
 	}
 	
+	public boolean isWord(String word)
+	{
+		for (String w : synonyms)
+			if (w.equals(word) || w.endsWith("_"+word))
+				return true;
+		return false;
+	}
+	
 	public String getId()
 	{
 		return id;

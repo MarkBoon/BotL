@@ -17,8 +17,11 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+import net.sf.jlinkgrammar.Linkage;
+import net.sf.jlinkgrammar.Parser;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -41,9 +44,12 @@ public class SentenceAnalyzer
 	private static final int MAX_DEPTH = 32;
 	private static final int BASE_RATING = MAX_DEPTH*2;
 	
+	private static final String NOUN_LINKAGE = ".n";
+	private static final String VERB_LINKAGE = ".v";
+	private static final String ADJECTIVE_LINKAGE = ".a";
+	
 	private JFrame window;
 	private JTextField sentenceField;
-	private JTextArea definitionField;
 	private JPanel analyzePanel;
 	private JPanel buttonPanel;
 	private Dictionary dictionary;
@@ -59,7 +65,9 @@ public class SentenceAnalyzer
 	private HashMap<String,Integer> candidateMap = new HashMap<String,Integer>();
 	private ArrayList<String> candidateList = new ArrayList<String>();
 	private ArrayList<DefaultComboBoxModel> listList = new ArrayList<DefaultComboBoxModel>();
-	
+	private List<TypedDependency> connectionList;
+	private Linkage linkage;
+
 	/**
 	 * @param args
 	 */
@@ -75,6 +83,7 @@ public class SentenceAnalyzer
 	{
 		dictionary = new Dictionary();
 		dictionary.getFromDB();
+		Parser.InitializeVars(new String[]{});
 	}
 
 	public void initGUIComponents()
@@ -86,7 +95,7 @@ public class SentenceAnalyzer
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel mainPanel = new JPanel();
-		mainPanel.setLayout(new GridLayout(4, 1));
+		mainPanel.setLayout(new GridLayout(3, 1));
 		window.setContentPane(mainPanel);
 
 		sentenceField = new JTextField();
@@ -96,23 +105,10 @@ public class SentenceAnalyzer
 		analyzePanel.setLayout(new FlowLayout());
 		mainPanel.add(analyzePanel);
 
-		definitionField = new JTextArea();
-		mainPanel.add(definitionField);
-
 		buttonPanel = new JPanel();
-		JButton analyzeButton = new JButton("Analayze");
 		JButton rememberButton = new JButton("Remember");
-		buttonPanel.add(analyzeButton);
 		buttonPanel.add(rememberButton);
-	
-		analyzeButton.addActionListener(new ActionListener()
-			{	
-				@Override
-				public void actionPerformed(ActionEvent e) 
-				{
-					analyze();
-				}
-			});
+
 		rememberButton.addActionListener(new ActionListener()
 			{	
 				@Override
@@ -133,7 +129,15 @@ public class SentenceAnalyzer
 			{
 				String sentence = sentenceField.getText();
 				setSentence(sentence);
-				window.validate();
+				SwingUtilities.invokeLater(new Runnable()
+					{	
+						@Override
+						public void run() 
+						{
+							analyzePanel.invalidate();
+							window.validate();
+						}
+					});
 			}
 		});
 	}
@@ -159,15 +163,49 @@ public class SentenceAnalyzer
 	    {
 	    	session.close();
 	    }
-		
 	}
 
+	private String[] tokenize(String sentence)
+	{
+		String[] tokens = sentence.split(" ");
+		ArrayList<String> list = new ArrayList<String>(tokens.length);
+		for (int i=0; i<tokens.length; i++)
+		{
+			if (i<tokens.length-1)
+			{
+				String doubleToken = tokens[i]+"_"+tokens[i+1];
+				if (dictionary._index.get(doubleToken)!=null)
+				{
+					linkage.word.remove(i+1);
+					list.add(doubleToken);
+					i++;
+					continue;
+				}
+			}
+			list.add(tokens[i]);
+		}
+		String[] result = new String[list.size()];
+		list.toArray(result);
+		return result;
+	}
+	
 	public void setSentence(String sentence)
 	{
+		linkage = Parser.parse(sentence);
+		
 		listList.clear();
 		ArrayList<JComponent> componentList = new ArrayList<JComponent>();
 		analyzePanel.removeAll();
-		tokens = sentence.split(" ");
+		tokens = tokenize(sentence);
+		
+		createConnectionList(sentence);
+		initializeCandidates();
+		
+	    List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(sentence)).tokenize();
+	  	Tree parse = lp.apply(rawWords);
+	    //GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
+		parse.pennPrint();
+		
 		ids = new String[tokens.length];
 		int index = 0;
 		for (String token: tokens)
@@ -189,16 +227,33 @@ public class SentenceAnalyzer
 				componentList.add(label);
 				analyzePanel.add(label);
 				ids[index] = list.get(0).id;
+				label.setToolTipText(list.get(0).definition);
 			}
 			else
 			{
+				boolean isNoun = false;
+				boolean isVerb = false;
+				boolean isAdjective = false;
+				
+				String linkageWord = linkage.word.get(index+1);
+				if (linkageWord.endsWith(NOUN_LINKAGE))
+					isNoun = true;
+				else if (linkageWord.endsWith(VERB_LINKAGE))
+					isVerb = true;
+				else if (linkageWord.endsWith(ADJECTIVE_LINKAGE))
+					isAdjective = true;
+				
 				final DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
 				final int listIndex = index;
-				JComboBox comboBox = new JComboBox(comboBoxModel);
+				final JComboBox comboBox = new JComboBox(comboBoxModel);
 				for (WordDefinition d : list)
 				{
-					if (verb==null || d.type==WordType.VERB)
-						comboBoxModel.addElement(d);
+					if ((isNoun && d.type==WordType.NOUN)
+					||  (isVerb && d.type==WordType.VERB)
+					||  (isAdjective && d.type==WordType.ADJECTIVE))
+						increaseRating(d.id, 1);
+					
+					comboBoxModel.addElement(d);
 				}
 				componentList.add(comboBox);
 				analyzePanel.add(comboBox);
@@ -208,20 +263,21 @@ public class SentenceAnalyzer
 						public void actionPerformed(ActionEvent arg0)
 						{
 							WordDefinition wd = (WordDefinition) comboBoxModel.getSelectedItem();
-							definitionField.setText(wd.definition);
 							ids[listIndex] = wd.id;
+							comboBox.setToolTipText(wd.definition);
 						}
 					});
 				ids[index] = ((WordDefinition)comboBoxModel.getElementAt(0)).id;
 				listList.add(comboBoxModel);
+				comboBox.setSelectedIndex(0);
 			}
 			index++;
 		}
-	}
-	
-	private void analyze()
-	{
-		initializeCandidates();
+		analyzePanel.invalidate();
+		for (String w : linkage.word)
+			System.out.print(w+" ");
+		System.out.println();
+		
 		rateCandidates();
 		selectBestCandidates();
 	}
@@ -259,16 +315,18 @@ public class SentenceAnalyzer
 	{
 		for (String candidateID : candidateList)
 		{
-			int rating = analyze(candidateID,1,false);
-			rating += analyze(candidateID,1,true);
-			int storedRating = candidateMap.get(candidateID);
-			rating += storedRating;
-			candidateMap.put(candidateID, new Integer(rating));
+			int rating = analyze(candidateID,candidateID,1,false);
+			rating += analyze(candidateID,candidateID,1,true);
+			if (rating!=0)
+				System.out.println("Rating for "+dictionary.getDefinition(candidateID)+" increased by "+rating);
+			increaseRating(candidateID, rating);
 		}		
 	}
 	
-	private int analyze(String id, int level, boolean up)
+	private int analyze(String startId, String id, int level, boolean up)
 	{
+		int logLevel = (int)(Math.log(level)/Math.log(2));
+		
 		if (level>MAX_DEPTH)
 			return 0;
 
@@ -279,22 +337,24 @@ public class SentenceAnalyzer
 
 		if (up)
 		{
+			String via = "";
+			if (!id.equals(startId))
+				via = " via "+dictionary.getDefinition(startId);
+
 			for (WordConnection connection : wd.connections)
 			{
 				// Potential self-referencing problem, giving undesired boost.
-				if (connection.id1.equals(id) && candidateMap.get(connection.id2)!=null)
+				if (connection.id1.equals(id) && hasConnection(startId, connection.id2, connection.relation))
 				{
+					System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection between "+dictionary.getDefinition(id)+" and "+dictionary.getDefinition(connection.id2)+via);
 					rating += BASE_RATING/level;
-					int storedRating = candidateMap.get(connection.id2);
-					storedRating += BASE_RATING/level;
-					candidateMap.put(connection.id2, new Integer(storedRating));
+					increaseRating(connection.id2, BASE_RATING/level);
 				}
-				if (connection.id2.equals(id) && candidateMap.get(connection.id1)!=null)
+				if (connection.id2.equals(id) &&  hasConnection(startId, connection.id1, connection.relation))
 				{
+					System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection between "+dictionary.getDefinition(id)+" and "+dictionary.getDefinition(connection.id1)+via);
 					rating += BASE_RATING/level;
-					int storedRating = candidateMap.get(connection.id1);
-					storedRating += BASE_RATING/level;
-					candidateMap.put(connection.id1, new Integer(storedRating));
+					increaseRating(connection.id1, BASE_RATING/level);
 				}
 			}
 		}
@@ -304,14 +364,72 @@ public class SentenceAnalyzer
 			if (link.getType()==LinkType.HYPERNYM)
 			{
 				if (up)
-					rating += analyze(link.getWordDefinitionId(), level*2,true);
+					rating += analyze(startId, link.getWordDefinitionId(), level*2,true);
 			}
 			else
 				if (!up)
-					rating += analyze(link.getWordDefinitionId(), level*2,false);		
+					rating += analyze(startId, link.getWordDefinitionId(), level*2,false);		
 		}
 		
 		return rating;
+	}
+	
+	private void increaseRating(String id, int amount)
+	{
+		Integer storedRating = candidateMap.get(id);
+		if (storedRating==null)
+			return;
+		storedRating += amount;
+		candidateMap.put(id, storedRating);
+	}
+	
+	private boolean hasConnection(String id1, String id2, String relation)
+	{
+    	WordDefinition definition1 = dictionary.getDefinition(id1);
+    	WordDefinition definition2 = dictionary.getDefinition(id2);
+    	if (definition1==null && definition2==null)
+    	{
+    		return false;
+    	}
+    	
+	    for (TypedDependency dependency : connectionList)
+	    {
+	    	String compareRelation = dependency.reln().getShortName();
+	    	if (relation.equals(compareRelation))
+	    	{
+		    	String compareId1 = dependency.gov().value();
+		    	String compareId2 = dependency.dep().value();
+		    	String verb = dictionary.getVerb(compareId1);
+		    	if (verb!=null)
+		    		compareId1 = verb;
+		    	verb = dictionary.getVerb(compareId2);
+		    	if (verb!=null)
+		    		compareId2 = verb;
+		    	
+		    	if (definition1==null)
+		    	{
+		    		if (id1.equals(compareId1) &&  definition2.isWord(compareId2))
+		    			return true;
+		    		if (id1.equals(compareId2) &&  definition2.isWord(compareId1))
+		    			return true;
+		    	}
+		    	else if (definition2==null)
+		    	{
+			    	if (definition1.isWord(compareId1) && id2.equals(compareId2))
+			    		return true;
+			    	if (definition1.isWord(compareId2) && id2.equals(compareId1))
+			    		return true;
+		    	}
+		    	else
+		    	{
+			    	if (definition1.isWord(compareId1) && definition2.isWord(compareId2))
+			    		return true;
+			    	if (definition1.isWord(compareId2) && definition2.isWord(compareId1))
+			    		return true;
+		    	}
+	    	}
+	    }
+		return false;
 	}
 	
 	private void selectBestCandidates()
@@ -342,17 +460,13 @@ public class SentenceAnalyzer
 		for (int i=0; i<ids.length; i++)
 			System.out.println(ids[i]+" ");
 
-	    List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(sentenceField.getText())).tokenize();
-	  	Tree parse = lp.apply(rawWords);
-	    GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
-	    List<TypedDependency> tdl = gs.typedDependenciesCCprocessed(true);
-	    System.out.println(tdl);
+		createConnectionList(sentenceField.getText());
+	    System.out.println(connectionList);
 	    System.out.println();
-	    for (TypedDependency dependency : tdl)
+	    for (TypedDependency dependency : connectionList)
 	    {
 	    	String relation = dependency.reln().getShortName();
 	    	String id1 = dependency.gov().value();
-	    	dependency.gov().index();
 	    	String id2 = dependency.dep().value();
 		    System.out.println(relation+"("+id1+"-"+dependency.gov().index()+","+id2+"-"+dependency.dep().index()+")");
 		    if (dependency.gov().index()>0)
@@ -365,5 +479,13 @@ public class SentenceAnalyzer
 		    	dictionary.incrementConnection(wordConnection);
 		    }
 	    }
+	}
+	
+	private void createConnectionList(String line)
+	{
+	    List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(line)).tokenize();
+	  	Tree parse = lp.apply(rawWords);
+	    GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
+	    connectionList = gs.typedDependenciesCCprocessed(true);		
 	}
 }

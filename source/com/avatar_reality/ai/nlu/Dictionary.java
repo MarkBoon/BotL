@@ -170,7 +170,7 @@ public class Dictionary
 			if (isVerb(verb))
 				return verb;
 		}
-		return null;
+		return word;
 	}
 	
 	public boolean isVerb(String verb)

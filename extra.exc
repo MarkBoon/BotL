@@ -1,0 +1,102 @@
+0000001 00 a 01 his 0 001 ! 00000002 a 0000 | Belonging to or associated with a male person or animal previously mentioned or easily identified; "James sold his business"
+0000002 00 a 01 her 0 001 ! 00000001 a 0000 | Belonging to or associated with a female person or animal previously mentioned or easily identified
+0000003 00 a 01 your 0 001 ! 00000005 a 0000 | Belonging to or associated with the person or people that the speaker is addressing; "what is your name?"
+0000004 00 a 01 your 0 000 | Belonging to or associated with any person in general; "the sight is enough to break your heart"
+0000005 00 a 01 my 0 001 ! 00000003 a 0000 | Belonging to or associated with the speaker; "my name is John"; "my friend"
+0000006 00 a 01 my 0 000 | Used with a name to refer to a member of the speaker's family
+0000007 00 p 01 his 0 001 ! 00000008 p 0000 | Used to refer to a thing or things belonging to or associated with a male person or animal previously mentioned; "he took my hand in his"
+0000008 00 p 01 hers 0 001 ! 00000007 p 0000 | Used to refer to a thing or things belonging to or associated with a male person or animal previously mentioned; "he took my hand in his"
+0000009 00 p 01 her 0 000 | Used as the object of a verb or preposition to refer to a female person or animal previously mentioned.
+0000010 00 a 01 its 0 000 | Belonging to or associated with a thing previously mentioned or easily identified; "turn the camera on its side"
+0000011 00 a 01 its 0 000 | Belonging to or associated with a child or animal of unspecified sex: "a baby in its mother's womb"
+0000012 00 a 01 their 0 001 ! 00000014 a 0000 | Belonging to or associated with the people or things previously mentioned or easily identified.
+0000013 00 a 01 their 0 001 ! 00000015 a 0000 | Belonging to or associated with a person of unspecified sex; "she heard someone blow their nose loudly"
+0000014 00 a 01 our 0 001 ! 00000012 a 0000 | Belonging to or associated with the speaker and one or more other people previously mentioned or easily identified.
+0000015 00 a 01 our 0 001 ! 00000013 a 0000 | Belonging to or associated with people in general; "when we hear a sound, our brains identify the source quickly"
+0000016 00 a 01 ours 0 000 | Used to refer to a thing or things belonging to or associated with the speaker and one or more other people previously mentioned or...; "ours was the ugliest house on the block"; "this chat of ours is strictly between us"
+0000017 00 p 01 mine 0 000 | Used to refer to a thing or things belonging to or associated with the speaker
+0000018 00 p 01 theirs 0 000 | Used to refer to a thing or things belonging to or associated with two or more people or things previously mentioned.
+0000019 00 p 01 yours 0 000 | Used to refer to a thing or things belonging to or associated with the person or people that the speaker is addressing.
+0000020 00 p 01 I 0 000 | Used to refer to oneself as speaker or writer.
+0000021 00 p 01 you 0 000 | Used to refer to the person or people that the speaker is addressing; "are you listening?"; "I love you"
+0000022 00 p 01 you 0 000 | Used to refer to the person being addressed together with other people regarded in the same class; "you Australians"
+0000023 00 p 01 he 0 000 | Used to refer to a man, boy, or male animal previously mentioned or easily identified.
+0000024 00 n 01 he 0 000 | A male; a man; "is that a he or a she?"
+0000025 00 p 01 she 0 000 | Used to refer to a woman, girl, or female animal previously mentioned or easily identified; "my sister told me that she was not happy"
+0000026 00 n 01 she 0 000 | A female; a woman; "society would label him a slut if he were a she"
+0000027 00 p 01 we 0 000 | Used by a speaker to refer to himself or herself and one or more other people considered together; "shall we have a drink?"
+0000028 00 p 01 we 0 000 | Used to refer to the speaker together with other people regarded in the same category; "we teachers"
+0000029 00 p 01 us 0 000 | Used by a speaker to refer to himself or herself and one or more other people as the object of a verb or preposition; "let us know"
+0000030 00 p 01 us 0 000 | Used after the verb “to be” and after “than” or “as”; "it's us or them"; "they are richer than us"
+0000031 00 p 01 one 0 000 | Referring to a person or thing previously mentioned; "her best apron, the white one"
+0000032 00 d 02 a 0 an 0 000 | An indefinite article indicates that its noun is not a particular one (or ones) identifiable to the listener; "she had a house so large that an elephant would get lost without a map"
+0000033 00 d 01 the 0 000 | A definite article indicates that its noun is a particular one (or ones) identifiable to the listener; "the children know the fastest way home"
+0000034 00 d 01 no 0 000 | A negative article specifies none of its noun, and can thus be regarded as neither definite nor indefinite; "no man is an island"; "no dogs are allowed here"
+0000035 00 d 01 some 0 000 | A partitive article is a type of indefinite article used with a mass noun such as water, to indicate a non-specific quantity of it; "do you want some coffee"; "do you want some of this coffee"
+0000036 00 p 02 this 0 these 0 000 | Used to identify a specific person or thing close at hand or being indicated or experienced; "is this your bag?"
+0000037 00 a 02 this 0 these 0 000 | Used to identify a specific person or thing close at hand or being indicated or experienced; "don't listen to this guy"
+0000038 00 r 02 this 0 these 0 000 | To the degree or extent indicated; "they can't handle a job this big"
+0000039 00 p 02 that 0 those 0 000 | Used to identify a specific person or thing observed by the speaker; "that's his wife over there"
+0000040 00 a 02 that 0 those 0 000 | Used to identify a specific person or thing observed or heard by the speaker; "look at that man"
+0000041 00 r 02 that 0 those 0 000 | To such a degree; so; "I would not go that far"
+0000042 00 c 02 that 0 those 0 000 | Introducing a subordinate clause expressing a statement or hypothesis; "she said that she was satisfied"
+0000043 00 p 02 it 0 them 0 000 | Used to refer to a thing previously mentioned or easily identified
+0000044 00 p 02 it 0 them 0 000 | Referring to an animal or child of unspecified sex
+0000045 00 p 01 which 0 000 | Asking for information specifying one or more people or things from a definite set; "which are the best varieties of grapes?"
+0000046 00 p 01 which 0 000 | Used referring to something previously mentioned when introducing a clause giving further information
+0000047 00 p 01 what 0 000 | Asking for information specifying something; "what is your name?"
+0000048 00 a 01 what 0 000 | Asking for information specifying something; "what time is it?"
+0000049 00 r 01 what 0 000 | To what extent; "what does it matter?"
+0000050 00 r 01 how 0 000 | In what way or manner; by what means; "how does it work?"
+0000051 00 p 01 me 0 000 | Used by a speaker to refer to himself or herself as the object of a verb or preposition; "wait for me!"
+0000052 00 p 01 me 0 000 | Used after the verb “to be” and after “than” or “as”
+0000053 00 p 01 they 0 000 | Used to refer to two or more people or things previously mentioned or easily identified
+0000054 00 p 01 they 0 000 | People in general; "the rest, as they say, is history"
+0000055 00 r 01 when 0 000 | At what time; "when did you last see him?"
+0000056 00 r 01 when 0 000 | At or on which (referring to a time or circumstance); "the day when I get my hair done"
+0000057 00 c 01 when 0 000 | At or during the time that; "when I was in school"
+0000100 00 q 01 of 0 000 | Expressing the relationship between a part and a whole; "the sleeve of his coat"
+0000101 00 q 01 of 0 000 | Expressing the relationship between a scale or measure and a value; "an increase of 5 percent"
+0000102 00 q 01 in 0 000 | Expressing the situation of something that is or appears to be enclosed or surrounded by something else; "living in Deep River"
+0000103 00 r 01 in 0 000 | Expressing movement with the result that someone or something becomes enclosed or surrounded by something else; "come in"; "bring it in"
+0000104 00 a 01 in 0 000 | (of a person) Present at one's home or office; "we knocked but there was no one in"
+0000105 00 q 01 at 0 000 | Expressing location or arrival in a particular place or position; "they live at Conway House"
+0000106 00 i 01 to 0 000 | Used with the base form of a verb to indicate that the verb is in the infinitive, in particular
+0000107 00 q 01 to 0 000 | Expressing motion in the direction of (a particular location); "my first visit to Africa"
+0000108 00 r 01 to 0 000 | So as to be closed or nearly closed; "he pulled the door to behind him"
+0000109 00 q 01 on 0 000 | Physically in contact with and supported by (a surface); "on the table was a water jug"
+0000110 00 r 01 on 0 000 | In contact with and supported by a surface.
+0000111 00 q 01 with 0 000 | Accompanied by (another person or thing); "steak with a bottle of red wine"
+0000112 00 q 01 with 0 000 | In the same direction as; "swim with the current"
+0000113 00 q 01 into 0 000 | Expressing movement or action with the result that someone or something becomes enclosed or surrounded by something else; "he fell into the hole"
+0000114 00 q 01 into 0 000 | Expressing movement or action with the result that someone or something makes physical contact with something else; "he bumped into the chair"
+0000115 00 q 01 for 0 000 | In support of or in favor of (a person or policy)
+0000116 00 c 01 for 0 000 | Because; since; "he felt guilty, for he knew that he bore a share of responsibility for Fanny's death"
+0000117 00 q 01 by 0 000 | Identifying the agent performing an action
+0000118 00 q 01 through 0 000 | Moving in one side and out of the other side of (an opening, channel, or location); "stepping through the doorway"
+0000119 00 q 01 over 0 000 | Extending directly upward from; "I saw flames over Berlin"
+0000120 00 q 01 above 0 000 | In extended space over and not touching: "a display of fireworks above the town"
+0000121 00 q 01 beyond 0 000 | At or to the further side of; "he pointed to a spot beyond the trees"; "there was the terminal and, beyond, an endless line of warehouses"
+0000122 00 q 01 across 0 000 | From one side to the other of (something).
+0000123 00 q 01 across 0 000 | Expressing movement over a place or region; "I ran across the street"
+0000124 00 q 01 past 0 000 | To or on the further side of; "he rode on past the crossroads"
+0000125 00 q 01 via 0 000 | Traveling through (a place) en route to a destination; "they came to Europe via Turkey"
+0000126 00 q 01 via 0 000 | By way of; through; "they can see the artists' works via a camera hookup"
+0000127 00 q 01 per 0 000 | For each (used with units to express a rate)
+0000128 00 q 01 per 0 000 | By means of; "send it per express"
+0000129 00 q 01 after 0 000 | During the period of time following (an event); "shortly after Christmas"
+0000130 00 q 01 behind 0 000 | At or to the far side of (something), typically so as to be hidden by it
+0000131 00 q 01 abaft 0 000 | Nearer the stern than; behind
+0000132 00 q 01 before 0 000 | During the period of time preceding (a particular event, date, or time); "she had to rest before dinner"
+0000133 00 q 01 before 0 000 | In front of; "the patterns swam before her eyes"; "trotting through the city with guards running before and behind"
+0000200 00 x 01 must 0 000 | Be obliged to; should (expressing necessity); "you must show your ID card"
+0000201 00 x 01 would 0 000 | (expressing the conditional mood) Indicating the consequence of an imagined event or situation; "he would lose his job"
+0000202 00 x 01 could 0 000 | Used to indicate possibility; "they could be right
+0000203 00 x 01 could 0 000 | Used in making polite requests; "could I use the phone?"
+0000204 00 x 01 should 0 000 | Used to indicate obligation, duty, or correctness, typically when criticizing someone's actions; "he should have been careful"
+0000205 00 x 01 should 0 000 | Indicating a desirable or expected state; "by now students should be able to read"
+0000206 00 x 01 will 0 000 | Expressing the future tense; "you will regret it later"
+0000207 00 x 01 shall 0 000 | (in the first person) Expressing the future tense; "this time next week I shall be in Scotland"
+0000208 00 x 01 shall 0 000 | Expressing a strong assertion or intention; "they shall succeed"
+0000209 00 x 01 can 0 000 | Be able to; "they can run fast"; "he can't afford it"
+0000210 00 x 01 may 0 000 | Expressing possibility; "they may succeed"

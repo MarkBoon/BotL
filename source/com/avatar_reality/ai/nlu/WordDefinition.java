@@ -24,6 +24,8 @@ public class WordDefinition
 	protected String id;
     @Column(name="line")
 	protected String line;
+    @Column(name="occurrences")
+	protected int occurrences;
     @Transient
 	protected WordType type;
     @Transient
@@ -94,6 +96,21 @@ public class WordDefinition
 	{
 		this.id = id;
 	}
+	
+	public int getOccurrences()
+	{
+		return occurrences;
+	}
+	
+	public void setOccurrences(int occurrences)
+	{
+		this.occurrences = occurrences;
+	}
+	
+	public void increaseOccurrence()
+	{
+		occurrences++;
+	}
 
 	public String getLine()
 	{
@@ -131,6 +148,7 @@ public class WordDefinition
 		}
 		return sessionFactory;
 	}
+	
 	public void save() throws Exception
 	{
         boolean existingTrans = false;
@@ -171,7 +189,51 @@ public class WordDefinition
         }
 		
 	}
-	
+
+	public static void save(List<WordDefinition> list) throws Exception
+	{
+	       boolean existingTrans = false;
+	       Session session = null;
+
+	       try
+	       {
+	            session = getSessionFactory().openSession();
+
+	            existingTrans = session.getTransaction().isActive();
+	    
+	            if (!existingTrans)
+	            	session.beginTransaction();
+
+	            for (WordDefinition definition : list)	
+	            	session.save(definition);
+	            
+	            session.flush();
+	  
+	            if (!existingTrans)
+	            	session.getTransaction().commit();
+	            session.close();
+	        }
+	        catch(Exception e1)
+	        {
+	            if (!existingTrans)
+	            {
+	                try
+	                {
+	                    session.getTransaction().rollback();
+	                }
+	                catch(Exception e2)
+	                {
+	                    //log.error("Rollback failed closing session ", e2);
+	                    session.close();
+	                }
+	            }
+
+	            throw e1;
+	        }
+			
+		
+	}
+
 	public void update() throws Exception
 	{
         boolean existingTrans = false;
@@ -218,7 +280,7 @@ public class WordDefinition
 		this.line = line;
 		String[] tokens = line.split(" ");
 		String location = tokens[0];
-		String file = tokens[1];
+//		String file = tokens[1];
 		String typeString = tokens[2];
 		int nrSynonyms = Integer.parseInt(tokens[3],16);
 		
@@ -232,10 +294,24 @@ public class WordDefinition
 			type = WordType.ADJECTIVE;
 		else if (typeString.equals("r"))
 			type = WordType.ADVERB;
+		else if (typeString.equals("p"))
+			type = WordType.PRONOUN;
+		else if (typeString.equals("d"))
+			type = WordType.ARTICLE;
+		else if (typeString.equals("c"))
+			type = WordType.CONJUNCTION;
+		else if (typeString.equals("q"))
+			type = WordType.PREPOSITION;
+		else if (typeString.equals("i"))
+			type = WordType.INFINITIVE;
+		else if (typeString.equals("x"))
+			type = WordType.AUXILIARY_VERB;
 		
 		for (int i=0; i<nrSynonyms; i++)
 		{
 			String wordString = tokens[4+i*2];
+			if (type==WordType.ADJECTIVE && (wordString.endsWith("(a)") || wordString.endsWith("(p)")))
+				wordString = wordString.substring(0,wordString.length()-3);
 			if (word==null)
 				word = wordString;
 			synonyms.add(wordString);

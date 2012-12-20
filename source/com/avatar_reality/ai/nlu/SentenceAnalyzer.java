@@ -47,6 +47,7 @@ public class SentenceAnalyzer
 	private static final String NOUN_LINKAGE = ".n";
 	private static final String VERB_LINKAGE = ".v";
 	private static final String ADJECTIVE_LINKAGE = ".a";
+//	private static final String DETERMINATOR_LINKAGE = ".d";
 	
 	private JFrame window;
 	private JTextField sentenceField;
@@ -59,6 +60,7 @@ public class SentenceAnalyzer
     private TreebankLanguagePack tlp = new PennTreebankLanguagePack();
     private GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
 	
+	private String[] originalTokens = new String[0];
 	private String[] tokens = new String[0];
 	private String[] ids;
 
@@ -117,7 +119,21 @@ public class SentenceAnalyzer
 					remember();
 				}
 			});
-		
+
+		JButton randomizeButton = new JButton("Randomize");
+		buttonPanel.add(randomizeButton);
+		randomizeButton.addActionListener(new ActionListener()
+		{	
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				String sentence = dictionary.getRandomSentence();
+				sentenceField.setText(sentence);
+				setSentence(sentence);
+			}
+		});
+
+
 		mainPanel.add(buttonPanel);
 
 		window.validate();
@@ -167,13 +183,13 @@ public class SentenceAnalyzer
 
 	private String[] tokenize(String sentence)
 	{
-		String[] tokens = sentence.split(" ");
-		ArrayList<String> list = new ArrayList<String>(tokens.length);
-		for (int i=0; i<tokens.length; i++)
+		originalTokens = sentence.split(" ");
+		ArrayList<String> list = new ArrayList<String>(originalTokens.length);
+		for (int i=0; i<originalTokens.length; i++)
 		{
-			if (i<tokens.length-1)
+			if (i<originalTokens.length-1)
 			{
-				String doubleToken = tokens[i]+"_"+tokens[i+1];
+				String doubleToken = originalTokens[i]+"_"+originalTokens[i+1];
 				if (dictionary._index.get(doubleToken)!=null)
 				{
 					linkage.word.remove(i+1);
@@ -182,7 +198,7 @@ public class SentenceAnalyzer
 					continue;
 				}
 			}
-			list.add(tokens[i]);
+			list.add(originalTokens[i]);
 		}
 		String[] result = new String[list.size()];
 		list.toArray(result);
@@ -198,6 +214,29 @@ public class SentenceAnalyzer
 		analyzePanel.removeAll();
 		tokens = tokenize(sentence);
 		
+		for (int i=0; i<tokens.length; i++)
+		{
+			String token = tokens[i];
+			String verb = dictionary.getVerb(token);
+			String noun = dictionary.makeSingular(token);
+			String adjective = dictionary.getAdjective(token);
+			if (noun!=null && verb!=null && !noun.equals(verb))
+			{
+				String linkageWord = linkage.word.get(i+1);
+				if (linkageWord.endsWith(NOUN_LINKAGE))
+					token = noun;
+				else
+					token = verb;
+			}
+			else if (verb!=null)
+				token = verb;
+			else if (noun!=null)
+				token = noun;
+			else if (adjective!=null)
+				token = adjective;
+			tokens[i] = token;
+		}
+		
 		createConnectionList(sentence);
 		initializeCandidates();
 		
@@ -210,9 +249,10 @@ public class SentenceAnalyzer
 		int index = 0;
 		for (String token: tokens)
 		{
-			String verb = dictionary.getVerb(token);
-			if (verb!=null)
-				token = verb;
+//			String verb = dictionary.getVerb(token);
+//			if (verb!=null)
+//				token = verb;
+//			token = dictionary.makeSingular(token);
 			List<WordDefinition> list = dictionary._index.get(token);
 			if (list==null)
 			{
@@ -274,6 +314,7 @@ public class SentenceAnalyzer
 			index++;
 		}
 		analyzePanel.invalidate();
+		window.pack();
 		for (String w : linkage.word)
 			System.out.print(w+" ");
 		System.out.println();
@@ -288,16 +329,16 @@ public class SentenceAnalyzer
 		candidateList.clear();
 		for (String token : tokens)
 		{
-			String verb = dictionary.getVerb(token);
-			if (verb!=null)
-				token = verb;
-
+//			String verb = dictionary.getVerb(token);
+//			if (verb!=null)
+//				token = verb;
+//
 			List<WordDefinition> list = dictionary._index.get(token);
 			if (list!=null)
 			{
 				for (WordDefinition definition : list)
 				{
-					Integer v = candidateMap.put(definition.id, 0);
+					Integer v = candidateMap.put(definition.id, definition.occurrences);
 					if (v==null)
 						candidateList.add(definition.id);
 				}

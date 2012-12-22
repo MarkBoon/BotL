@@ -55,6 +55,38 @@
 0000055 00 r 01 when 0 000 | At what time; "when did you last see him?"
 0000056 00 r 01 when 0 000 | At or on which (referring to a time or circumstance); "the day when I get my hair done"
 0000057 00 c 01 when 0 000 | At or during the time that; "when I was in school"
+0000058 00 r 01 so 0 000 | To such a great extent; "the words tumbled out so fast that I could barely hear them"
+0000059 00 c 01 so 0 000 | And for this reason; therefore; "it hurt, so I went to see a specialist"
+0000060 00 c 01 yet 0 000 | But at the same time; but nevertheless.
+0000061 00 p 01 who 0 000 | What or which person or people; "who is that woman?"
+0000062 00 p 01 who 0 000 | Used to introduce a clause giving further information about a person or people previously mentioned; "the mouse who married the playboy"
+0000063 00 p 01 whom 0 000 | Used instead of “who” as the object of a verb or preposition; "whom did he marry?"
+0000064 00 a 01 whose 0 000 | Belonging to or associated with which person; "whose round is it?"; "a minivan drove by and Juliet wondered whose it was"
+0000065 00 a 01 whose 0 000 | Of whom or which (used to indicate that the following noun belongs to or is associated with the person or thing mentioned in the...; "he's a man whose opinion I respect"
+0000066 00 c 01 and 0 000 | Used to connect words of the same part of speech, clauses, or sentences that are to be taken jointly: "bread and butter"
+0000067 00 c 01 than 0 000 | Introducing the second element in a comparison; "he was smaller than his son"; "Jack knows more than I do"
+0000068 00 c 01 than 0 000 | Used in expressions introducing an exception or contrast; "he claims not to own anything other than his home"
+0000069 00 c 01 or 0 000 | Used to link alternatives; "a cup of tea or coffee"; "are you coming or not?"
+0000070 00 c 01 but 0 000 | Used to introduce something contrasting with what has already been mentioned; "he said he wanted to, but he had no time"
+0000071 00 q 01 but 0 000 | Except; apart from; other than; "in Texas, we were never anything but poor"; "I trusted no one but him"
+0000072 00 p 01 everyone 0 000 | Every person.
+0000073 00 p 01 everybody 0 000 | Every person; "everybody agrees with his views"; "it's not everybody's cup of tea".
+0000074 00 p 01 nobody 0 000 | No person; no one: "nobody was at home"
+0000075 00 p 02 somebody 0 someone 0 000 | Some person
+0000076 00 p 01 somebody 0 000 | A person of importance or authority; "I'd like to be somebody"
+0000077 00 p 02 anybody 0 anyone 0 000 | Any person or people: "there wasn't anyone there"
+0000078 00 p 01 anyone 0 000 | Used for emphasis; "anyone could do it"
+0000079 00 p 01 anybody 0 000 | A person of any importance.
+0000080 00 p 01 no_one 0 000 | No person; not a single person
+0000081 00 p 01 some 0 000 | An unspecified number or amount of people or things; "if you want whiskey I'll give you some"
+0000081 00 p 01 none 0 000 | Not any; "none of you want to work"
+0000082 00 p 01 nothing 0 000 | Not anything; no single thing; "I said nothing"
+0000083 00 c 01 either 0 000 | Used before the first of two (or occasionally more) alternatives that are being specified (the other being introduced by “or”)
+0000084 00 c 01 if 0 000 | Introducing a conditional clause
+0000085 00 n 01 if 0 000 | A condition or supposition: "there are so many ifs and buts in the policy"
+0000086 00 n 01 but 0 000 | An argument against something; an objection: "no buts, just get out of here"
+0000087 00 r 01 else 0 000 | In addition; besides; "anything else you need?"; "I wasn't sure what else you'd want"
+0000088 00 r 01 else 0 000 | Different; instead; "isn't there anyone else?"; "it's fate, or whatever else you call it"
 0000100 00 q 01 of 0 000 | Expressing the relationship between a part and a whole; "the sleeve of his coat"
 0000101 00 q 01 of 0 000 | Expressing the relationship between a scale or measure and a value; "an increase of 5 percent"
 0000102 00 q 01 in 0 000 | Expressing the situation of something that is or appears to be enclosed or surrounded by something else; "living in Deep River"
@@ -89,6 +121,14 @@
 0000131 00 q 01 abaft 0 000 | Nearer the stern than; behind
 0000132 00 q 01 before 0 000 | During the period of time preceding (a particular event, date, or time); "she had to rest before dinner"
 0000133 00 q 01 before 0 000 | In front of; "the patterns swam before her eyes"; "trotting through the city with guards running before and behind"
+0000134 00 q 01 during 0 000 | Throughout the course or duration of (a period of time); "the restaurant is open during the day"
+0000135 00 q 01 during 0 000 | Used to indicate constant development throughout a period; "the period during which he grew to adulthood"
+0000136 00 q 01 from 0 000 | Indicating the point in space at which a journey, motion, or action starts; "she began to walk away from him"
+0000137 00 q 01 from 0 000 | Indicating the distance between a particular place and another place used as a point of reference; "50 yards from a checkpoint"
+0000138 00 q 01 against 0 000 | In opposition to; "the fight against crime"
+0000139 00 q 01 against 0 000 | In opposition to, with reference to legal action; "allegations against police officers"
+0000140 00 q 01 on 0 000 | used as a function word to indicate the subject of study, discussion, or consideration; "a book on insects"; "reflect on that a moment"; "agree on price"; "ban on drugs"
+0000141 00 q 01 off 0 000 | Moving away and often down from; "he rolled off the bed"
 0000200 00 x 01 must 0 000 | Be obliged to; should (expressing necessity); "you must show your ID card"
 0000201 00 x 01 would 0 000 | (expressing the conditional mood) Indicating the consequence of an imagined event or situation; "he would lose his job"
 0000202 00 x 01 could 0 000 | Used to indicate possibility; "they could be right
@@ -100,3 +140,4 @@
 0000208 00 x 01 shall 0 000 | Expressing a strong assertion or intention; "they shall succeed"
 0000209 00 x 01 can 0 000 | Be able to; "they can run fast"; "he can't afford it"
 0000210 00 x 01 may 0 000 | Expressing possibility; "they may succeed"
+0000211 00 x 01 have 0 000 | Used with a past participle to form the perfect, pluperfect, and future perfect tenses, and the conditional mood; "I have finished"

@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
@@ -79,10 +80,10 @@ public class WordDefinition
 		return  synonyms.get(0)+typeString+" - ["+synonym+"]";
 	}
 	
-	public boolean isWord(String word)
+	public boolean isWord(ArrayList<String> wordList)
 	{
 		for (String w : synonyms)
-			if (w.equals(word) || w.endsWith("_"+word))
+			if (wordList.contains(w))
 				return true;
 		return false;
 	}
@@ -273,6 +274,45 @@ public class WordDefinition
             throw e1;
         }
 		
+	}
+
+	public static void saveNew(List<WordDefinition> list) throws Exception
+	{
+       Session session = null;
+
+       try
+       {
+            for (WordDefinition definition : list)
+            {
+	            try
+	            {
+	                session = getSessionFactory().openSession();
+		            session.beginTransaction();
+	            	session.save(definition);
+	            	session.getTransaction().commit();
+	            	session.flush();
+	                session.close();
+	            }
+	            catch (ConstraintViolationException ex)
+	            {
+	                session.close();	            	
+	            }
+            }            
+        }
+        catch(Exception e1)
+        {
+            try
+            {
+                session.getTransaction().rollback();
+            }
+            catch(Exception e2)
+            {
+                //log.error("Rollback failed closing session ", e2);
+                session.close();
+            }
+
+            throw e1;
+        }
 	}
 
 	protected void parseLine(String line)

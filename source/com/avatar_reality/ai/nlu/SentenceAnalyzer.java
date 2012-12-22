@@ -60,8 +60,10 @@ public class SentenceAnalyzer
     private TreebankLanguagePack tlp = new PennTreebankLanguagePack();
     private GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
 	
+	private String originalSentence;
 	private String[] originalTokens = new String[0];
 	private String[] tokens = new String[0];
+	private ArrayList<String>[] tokenLists = new ArrayList[0];
 	private String[] ids;
 
 	private HashMap<String,Integer> candidateMap = new HashMap<String,Integer>();
@@ -187,7 +189,7 @@ public class SentenceAnalyzer
 		ArrayList<String> list = new ArrayList<String>(originalTokens.length);
 		for (int i=0; i<originalTokens.length; i++)
 		{
-			if (i<originalTokens.length-1)
+			/*if (i<originalTokens.length-1)
 			{
 				String doubleToken = originalTokens[i]+"_"+originalTokens[i+1];
 				if (dictionary._index.get(doubleToken)!=null)
@@ -197,7 +199,7 @@ public class SentenceAnalyzer
 					i++;
 					continue;
 				}
-			}
+			}*/
 			list.add(originalTokens[i]);
 		}
 		String[] result = new String[list.size()];
@@ -207,13 +209,28 @@ public class SentenceAnalyzer
 	
 	public void setSentence(String sentence)
 	{
+		originalSentence = sentence;
 		linkage = Parser.parse(sentence);
 		
 		listList.clear();
 		ArrayList<JComponent> componentList = new ArrayList<JComponent>();
 		analyzePanel.removeAll();
 		tokens = tokenize(sentence);
+		tokenLists = new ArrayList[tokens.length];
 		
+		for (int i=0; i<tokens.length; i++)
+		{
+			ArrayList<String> tokenList = new ArrayList<String>();
+			tokenLists[i] = tokenList;
+			String token = tokens[i];
+			tokenList.add(token);
+			if (!tokenList.contains(token.toLowerCase()))
+				tokenList.add(token.toLowerCase());
+			dictionary.addVerb(token,tokenList);
+			dictionary.addNoun(token,tokenList);
+			dictionary.addAdjective(token,tokenList);
+		}
+		/*
 		for (int i=0; i<tokens.length; i++)
 		{
 			String token = tokens[i];
@@ -236,7 +253,8 @@ public class SentenceAnalyzer
 				token = adjective;
 			tokens[i] = token;
 		}
-		
+		*/
+			
 		createConnectionList(sentence);
 		initializeCandidates();
 		
@@ -247,16 +265,102 @@ public class SentenceAnalyzer
 		
 		ids = new String[tokens.length];
 		int index = 0;
+		for (ArrayList<String> tokenList: tokenLists)
+		{
+			final DefaultComboBoxModel comboBoxModel = new DefaultComboBoxModel();
+			final int listIndex = index;
+			final JComboBox comboBox = new JComboBox(comboBoxModel);
+
+			for (String token : tokenList)
+			{
+				List<WordDefinition> list = dictionary._index.get(token);
+				if (list==null)
+				{
+//					JLabel label = new JLabel("["+token+"]");
+//					componentList.add(label);
+//					analyzePanel.add(label);
+//					ids[index] = token;
+				}
+				else if (list.size()<2)
+				{
+					comboBoxModel.addElement(list.get(0));
+//					JLabel label = new JLabel(token);
+//					componentList.add(label);
+//					analyzePanel.add(label);
+//					ids[index] = list.get(0).id;
+//					label.setToolTipText(list.get(0).definition);
+				}
+				else
+				{
+					boolean isNoun = false;
+					boolean isVerb = false;
+					boolean isAdjective = false;
+					
+					String linkageWord = linkage.word.get(index+1);
+					if (linkageWord.endsWith(NOUN_LINKAGE))
+						isNoun = true;
+					else if (linkageWord.endsWith(VERB_LINKAGE))
+						isVerb = true;
+					else if (linkageWord.endsWith(ADJECTIVE_LINKAGE))
+						isAdjective = true;
+					
+					for (WordDefinition d : list)
+					{
+						if ((isNoun && d.type==WordType.NOUN)
+						||  (isVerb && d.type==WordType.VERB)
+						||  (isAdjective && d.type==WordType.ADJECTIVE))
+							increaseRating(d.id, 1);
+						
+						comboBoxModel.addElement(d);
+					}
+				}
+			}
+			
+			if (comboBoxModel.getSize()==0)
+			{
+				String token = tokenList.get(0);
+				JLabel label = new JLabel("["+token+"]");
+				componentList.add(label);
+				analyzePanel.add(label);
+				ids[index] = token;				
+			}
+			else if (comboBoxModel.getSize()==1)
+			{
+				WordDefinition wd = (WordDefinition)comboBoxModel.getElementAt(0);
+				JLabel label = new JLabel(wd.word);
+				componentList.add(label);
+				analyzePanel.add(label);
+				ids[index] = wd.id;
+				label.setToolTipText(wd.definition);
+			}
+			else
+			{
+				componentList.add(comboBox);
+				analyzePanel.add(comboBox);
+				comboBox.addActionListener(new ActionListener()
+					{	
+						@Override
+						public void actionPerformed(ActionEvent arg0)
+						{
+							WordDefinition wd = (WordDefinition) comboBoxModel.getSelectedItem();
+							ids[listIndex] = wd.id;
+							comboBox.setToolTipText(wd.definition);
+						}
+					});
+				ids[index] = ((WordDefinition)comboBoxModel.getElementAt(0)).id;
+				listList.add(comboBoxModel);
+				comboBox.setSelectedIndex(0);
+			}
+			
+			index++;
+		}
+		/*
 		for (String token: tokens)
 		{
-//			String verb = dictionary.getVerb(token);
-//			if (verb!=null)
-//				token = verb;
-//			token = dictionary.makeSingular(token);
 			List<WordDefinition> list = dictionary._index.get(token);
 			if (list==null)
 			{
-				JLabel label = new JLabel(token);
+				JLabel label = new JLabel("["+token+"]");
 				componentList.add(label);
 				analyzePanel.add(label);
 				ids[index] = token;
@@ -313,6 +417,7 @@ public class SentenceAnalyzer
 			}
 			index++;
 		}
+		*/
 		analyzePanel.invalidate();
 		window.pack();
 		for (String w : linkage.word)
@@ -327,27 +432,26 @@ public class SentenceAnalyzer
 	{
 		candidateMap.clear();
 		candidateList.clear();
-		for (String token : tokens)
+		for (ArrayList<String> tokenList : tokenLists)
 		{
-//			String verb = dictionary.getVerb(token);
-//			if (verb!=null)
-//				token = verb;
-//
-			List<WordDefinition> list = dictionary._index.get(token);
-			if (list!=null)
+			for (String token : tokenList)
 			{
-				for (WordDefinition definition : list)
+				List<WordDefinition> list = dictionary._index.get(token);
+				if (list!=null)
 				{
-					Integer v = candidateMap.put(definition.id, definition.occurrences);
-					if (v==null)
-						candidateList.add(definition.id);
+					for (WordDefinition definition : list)
+					{
+						Integer v = candidateMap.put(definition.id, definition.occurrences);
+						if (v==null)
+							candidateList.add(definition.id);
+					}
 				}
-			}
-			else
-			{
-				Integer v = candidateMap.put(token, 0);
-				if (v==null)
-					candidateList.add(token);
+				/*else
+				{
+					Integer v = candidateMap.put(token, 0);
+					if (v==null)
+						candidateList.add(token);
+				}*/
 			}
 		}
 	}
@@ -356,6 +460,7 @@ public class SentenceAnalyzer
 	{
 		for (String candidateID : candidateList)
 		{
+			WordDefinition wd = dictionary.getDefinition(candidateID);
 			int rating = analyze(candidateID,candidateID,1,false);
 			rating += analyze(candidateID,candidateID,1,true);
 			if (rating!=0)
@@ -375,6 +480,9 @@ public class SentenceAnalyzer
 		WordDefinition wd = dictionary.getDefinition(id);
 		if (wd==null)
 			return 0;
+
+		if (wd.line.toLowerCase().contains(originalSentence.toLowerCase()))
+			rating += 1000 / level;
 
 		if (up)
 		{
@@ -438,34 +546,36 @@ public class SentenceAnalyzer
 	    	String compareRelation = dependency.reln().getShortName();
 	    	if (relation.equals(compareRelation))
 	    	{
-		    	String compareId1 = dependency.gov().value();
-		    	String compareId2 = dependency.dep().value();
-		    	String verb = dictionary.getVerb(compareId1);
-		    	if (verb!=null)
-		    		compareId1 = verb;
-		    	verb = dictionary.getVerb(compareId2);
-		    	if (verb!=null)
-		    		compareId2 = verb;
+	    		ArrayList<String> compareList1 = tokenLists[dependency.gov().index()-1];
+	    		ArrayList<String> compareList2 = tokenLists[dependency.dep().index()-1];
+		    	//String compareId1 = dependency.gov().value();
+		    	//String compareId2 = dependency.dep().value();
+//		    	String verb = dictionary.getVerb(compareId1);
+//		    	if (verb!=null)
+//		    		compareId1 = verb;
+//		    	verb = dictionary.getVerb(compareId2);
+//		    	if (verb!=null)
+//		    		compareId2 = verb;
 		    	
 		    	if (definition1==null)
 		    	{
-		    		if (id1.equals(compareId1) &&  definition2.isWord(compareId2))
+		    		if (compareList1.contains(id1) &&  definition2.isWord(compareList2))
 		    			return true;
-		    		if (id1.equals(compareId2) &&  definition2.isWord(compareId1))
+		    		if (compareList2.contains(id1) &&  definition2.isWord(compareList1))
 		    			return true;
 		    	}
 		    	else if (definition2==null)
 		    	{
-			    	if (definition1.isWord(compareId1) && id2.equals(compareId2))
+			    	if (definition1.isWord(compareList1) && compareList2.contains(id2))
 			    		return true;
-			    	if (definition1.isWord(compareId2) && id2.equals(compareId1))
+			    	if (definition1.isWord(compareList2) && compareList1.contains(id2))
 			    		return true;
 		    	}
 		    	else
 		    	{
-			    	if (definition1.isWord(compareId1) && definition2.isWord(compareId2))
+			    	if (definition1.isWord(compareList1) && definition2.isWord(compareList2))
 			    		return true;
-			    	if (definition1.isWord(compareId2) && definition2.isWord(compareId1))
+			    	if (definition1.isWord(compareList2) && definition2.isWord(compareList1))
 			    		return true;
 		    	}
 	    	}

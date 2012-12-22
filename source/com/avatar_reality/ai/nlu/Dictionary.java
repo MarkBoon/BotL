@@ -28,7 +28,7 @@ public class Dictionary
 	{
 		long t = System.currentTimeMillis();
 		Dictionary dictionary = new Dictionary();
-		dictionary.getDefault();
+		dictionary.getExtra();
 		long t1 = System.currentTimeMillis() - t;
 		System.out.println("Parsing took "+t1+" ms.");
 		System.out.println("Parsed "+dictionary._dictionary.size()+" words");
@@ -50,9 +50,16 @@ public class Dictionary
 		WordDefinition.save(_wordList);
 	}
 	
-	public void getFromDB()
+	public void getExtra() throws Exception
 	{
 		parse("extra.exc");
+
+		WordDefinition.saveNew(_wordList);
+	}
+	
+	public void getFromDB()
+	{
+//		parse("extra.exc");
 		parseExceptions("verb.exc",_irregularVerbs);
 		parseExceptions("noun.exc",_irregularNouns);
 		parseExceptions("adj.exc",_irregularAdjectives);
@@ -165,42 +172,46 @@ public class Dictionary
 		return _dictionary.get(id);
 	}
 	
-	public String getVerb(String word)
+	private void add(String word, ArrayList<String> list)
+	{
+		if (word!=null && !list.contains(word))
+			list.add(word);
+	}
+	
+	public void addVerb(String word, ArrayList<String> list)
 	{
 		String verb = _irregularVerbs.get(word);
-		if (verb!=null)
-			return verb;
+		add(verb,list);
 		if (word.endsWith("ing"))
 		{
 			verb = word.substring(0,word.length()-3);
 			if (isVerb(verb))
-				return verb;
+				add(verb,list);
 			verb = word.substring(0,word.length()-3)+"e";
 			if (isVerb(verb))
-				return verb;
+				add(verb,list);
 		}
 		else if (word.endsWith("ed"))
 		{
 			verb = word.substring(0,word.length()-2);
 			if (isVerb(verb))
-				return verb;			
+				add(verb,list);			
 			verb = word.substring(0,word.length()-1);
 			if (isVerb(verb))
-				return verb;			
+				add(verb,list);		
 		}
 		else if (word.endsWith("es"))
 		{
 			verb = word.substring(0,word.length()-2);
 			if (isVerb(verb))
-				return verb;
+				add(verb,list);
 		}
 		else if (word.endsWith("s"))
 		{
 			verb = word.substring(0,word.length()-1);
 			if (isVerb(verb))
-				return verb;
+				add(verb,list);
 		}
-		return null;
 	}
 	
 	public boolean isVerb(String word)
@@ -214,24 +225,22 @@ public class Dictionary
 		return false;
 	}
 	
-	public String makeSingular(String word)
+	public void addNoun(String word, ArrayList<String> list)
 	{
 		String noun = _irregularNouns.get(word);
-		if (noun!=null)
-			return noun;
+		add(noun,list);
 		if (word.endsWith("ies"))
 		{
 			String singular = word.substring(0,word.length()-3)+"y";
 			if (isNoun(singular))
-				return singular;
+				add(singular,list);
 		}
 		if (word.endsWith("s") && !word.endsWith("ss"))
 		{
 			String singular = word.substring(0,word.length()-1);
 			if (isNoun(singular))
-				return singular;
+				add(singular,list);
 		}
-		return null;
 	}
 	
 	public boolean isNoun(String word)
@@ -245,48 +254,52 @@ public class Dictionary
 		return false;
 	}
 	
-	public String getAdjective(String word)
+	public void addAdjective(String word, ArrayList<String> list)
 	{
 		String adjective = _irregularAdjectives.get(word);
-		if (adjective!=null)
-			return adjective;
+		add(adjective,list);
 		if (word.endsWith("ier"))
 		{
 			adjective = word.substring(0,word.length()-3)+"y";
 			if (isAdjective(adjective))
-				return adjective;
+				add(adjective,list);
+		}
+		else if (word.endsWith("ily"))
+		{
+			adjective = word.substring(0,word.length()-3)+"y";
+			if (isAdjective(adjective))
+				add(adjective,list);
 		}
 		else if (word.endsWith("iest"))
 		{
 			adjective = word.substring(0,word.length()-4)+"y";
 			if (isAdjective(adjective))
-				return adjective;
+				add(adjective,list);
 		}
 		else if (word.endsWith("er"))
 		{
 			adjective = word.substring(0,word.length()-2);
 			if (isAdjective(adjective))
-				return adjective;
+				add(adjective,list);
 			adjective = word.substring(0,word.length()-1);
 			if (isAdjective(adjective))
-				return adjective;
+				add(adjective,list);
 		}
 		else if (word.endsWith("est"))
 		{
 			adjective = word.substring(0,word.length()-3);
 			if (isAdjective(adjective))
-				return adjective;			
+				add(adjective,list);			
 			adjective = word.substring(0,word.length()-2);
 			if (isAdjective(adjective))
-				return adjective;			
+				add(adjective,list);			
 		}
 		else if (word.endsWith("ly"))
 		{
 			adjective = word.substring(0,word.length()-2);
 			if (isAdjective(adjective))
-				return adjective;
+				add(adjective,list);
 		}
-		return null;
 	}
 	
 	public boolean isAdjective(String word)

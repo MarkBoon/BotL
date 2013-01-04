@@ -87,6 +87,12 @@
 0000086 00 n 01 but 0 000 | An argument against something; an objection: "no buts, just get out of here"
 0000087 00 r 01 else 0 000 | In addition; besides; "anything else you need?"; "I wasn't sure what else you'd want"
 0000088 00 r 01 else 0 000 | Different; instead; "isn't there anyone else?"; "it's fate, or whatever else you call it"
+0000089 00 r 01 as 0 000 | Used in comparisons to refer to the extent or degree of something; "hailstones as big as tennis balls"
+0000090 00 c 01 as 0 000 | Used to indicate that something happens during the time when something is taking place; "Frank watched him as he ambled through the crowd"
+0000091 00 p 01 as 0 000 | Used to refer to the function or character that someone or something has; "he got a job as a cook"
+0000092 00 n 01 as 0 000 | An ancient Roman copper coin
+0000093 00 p 01 him 0 000 | Used as the object of a verb or preposition to refer to a male person or animal previously mentioned or easily identified
+0000094 00 p 01 him 0 000 | Referring to a person or animal of unspecified sex (in modern use chiefly replaced by “him or her” or “them”)
 0000100 00 q 01 of 0 000 | Expressing the relationship between a part and a whole; "the sleeve of his coat"
 0000101 00 q 01 of 0 000 | Expressing the relationship between a scale or measure and a value; "an increase of 5 percent"
 0000102 00 q 01 in 0 000 | Expressing the situation of something that is or appears to be enclosed or surrounded by something else; "living in Deep River"
@@ -129,6 +135,9 @@
 0000139 00 q 01 against 0 000 | In opposition to, with reference to legal action; "allegations against police officers"
 0000140 00 q 01 on 0 000 | used as a function word to indicate the subject of study, discussion, or consideration; "a book on insects"; "reflect on that a moment"; "agree on price"; "ban on drugs"
 0000141 00 q 01 off 0 000 | Moving away and often down from; "he rolled off the bed"
+0000142 00 q 01 without 0 000 | In the absence of; "he went without her"
+0000143 00 r 01 without 0 000 | Outside; "the enemy without"
+0000144 00 c 01 without 0 000 | Without it being the case that
 0000200 00 x 01 must 0 000 | Be obliged to; should (expressing necessity); "you must show your ID card"
 0000201 00 x 01 would 0 000 | (expressing the conditional mood) Indicating the consequence of an imagined event or situation; "he would lose his job"
 0000202 00 x 01 could 0 000 | Used to indicate possibility; "they could be right

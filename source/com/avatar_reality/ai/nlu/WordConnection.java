@@ -22,4 +22,9 @@ public class WordConnection
 	String relation;
     @Column(name="occurences")
 	int occurences = 1;
+    
+    public String toString()
+    {
+    	return relation+"("+id1+","+id2+")";
+    }
 }

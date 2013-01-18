@@ -11,6 +11,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.stanford.nlp.trees.TypedDependency;
+
 public class Dictionary
 {
 	HashMap<String,List<WordDefinition>> _index = new HashMap<String, List<WordDefinition>>();
@@ -68,6 +70,8 @@ public class Dictionary
 		Transaction tx = null;
 	    Session session = WordDefinition.getSessionFactory().openSession();
 
+	    int nrDefinitions = 0;
+	    
 	    try
 	    {
 	    	tx = session.beginTransaction();
@@ -79,6 +83,7 @@ public class Dictionary
 	    		WordDefinition wd = iter.next();
 	    		wd.parseLine(wd.line);
 	    		addDefinition(wd);
+	    		nrDefinitions += wd.synonyms.size();
 	    	}
 	    	tx.commit();
 	    }
@@ -86,6 +91,8 @@ public class Dictionary
 	    {
 	    	session.close();
 	    }
+	    System.out.println("Nr of indexes: "+_index.size());
+	    System.out.println("Nr of definitions: "+nrDefinitions);
 	}
 	
 	public void parse(String file)
@@ -325,6 +332,23 @@ public class Dictionary
 		{
 			d2.connections.add(connection);
 		}
+		if (connection.relation.startsWith("prep_"))
+		{
+			String preposition = connection.relation.substring(5);
+			List<WordDefinition> list = _index.get(preposition);
+			if (list==null)
+			{
+//				System.err.println("Unknown preposition: "+connection.relation);
+			}
+			else
+			{
+				for (WordDefinition wd : list)
+				{
+					if (wd.type==WordType.PREPOSITION)
+						wd.connections.add(connection);
+				}
+			}
+		}
 	}
 	
 	public void incrementConnection(WordConnection wordConnection)
@@ -344,6 +368,7 @@ public class Dictionary
 	        }
 	    	else
 	    	{
+	    		System.err.println("New connection");
 	    		session.save(wordConnection);
 	    		addConnection(wordConnection);
 	    	}
@@ -384,5 +409,149 @@ public class Dictionary
 					return sentence.substring(1,sentence.length()-1);
 			}
 		}
+	}
+	
+	public void createRandomConnection(SentenceAnalyzer analyzer)
+	{
+		WordDefinition definition = null;
+		while (true)
+		{
+//			if (!found && !sentence.isEmpty())
+//			{
+//				System.err.println("Skip: "+sentence);
+//			}
+//			found = false;
+			
+			int index = (int)(Math.random()*_wordList.size());
+			definition = _wordList.get(index);
+			createConnections(definition, analyzer);	
+		}
+	}
+
+	public void createAllConnections(SentenceAnalyzer analyzer)
+	{
+		for (WordDefinition wd : _dictionary.values())
+		{
+			createConnections(wd,analyzer);
+		}
+	}
+	
+	public boolean createConnections(WordDefinition definition, SentenceAnalyzer analyzer)
+	{
+		WordDefinition altDefinition;
+		boolean found = false;
+		String explanation = definition.line.substring(definition.line.indexOf("|"));
+		String[] sentences = explanation.split("; ");
+		for (String sentence : sentences)
+		{
+			sentence = sentence.replace("n't", " not");
+			sentence = sentence.replace(",","");
+			sentence = sentence.replace(";","");
+			sentence = sentence.replace(".","");
+			sentence = sentence.replace("?","");
+			if (sentence.contains("'"))
+				continue;
+			sentence = sentence.trim();
+			if (sentence.startsWith("\"") && sentence.endsWith("\""))
+			{
+				List<TypedDependency> dependencies = analyzer.createConnectionList(sentence);
+				for (TypedDependency dependency : dependencies)
+				{		
+					if (!dependency.reln().getShortName().equals("prep"))
+						continue;
+			    	String relation = dependency.reln().toString();
+			    	String idString1 = dependency.gov().value().toLowerCase();
+			    	String idString2 = dependency.dep().value().toLowerCase();
+			    	
+			    	ArrayList<String> id1List = new ArrayList<String>();
+			    	id1List.add(idString1);
+			    	addAdjective(idString1, id1List);
+			    	addNoun(idString1, id1List);
+			    	addVerb(idString1, id1List);
+			    	ArrayList<String> id2List = new ArrayList<String>();
+			    	id2List.add(idString2);
+			    	addAdjective(idString2, id2List);
+			    	addNoun(idString2, id2List);
+			    	addVerb(idString2, id2List);
+			    	
+			    	for (String id1 : id1List)
+			    	{
+			    		for (String id2 : id2List)
+			    		{
+						    if (dependency.gov().index()>0)
+						    {
+							    System.out.println(relation+"("+id1+"-"+dependency.gov().index()+","+id2+"-"+dependency.dep().index()+")");
+						    	ArrayList<String> wordList = new ArrayList<String>();
+						    	wordList.add(id1);
+						    	if (definition.isWord(wordList))
+						    	{
+							    	WordConnection wordConnection = new WordConnection();
+							    	wordConnection.relation = relation;
+							    	wordConnection.id1 =definition.id;
+						    		List<WordDefinition> wd2List = (List<WordDefinition>) _index.get(id2);
+						    		if (wd2List!=null && wd2List.size()==1)
+								    	wordConnection.id2 = wd2List.get(0).id;
+						    		else
+								    	wordConnection.id2 = id2;
+								    System.out.println("1-Save "+relation+"("+wordConnection.id1+","+wordConnection.id2+")");
+							    	incrementConnection(wordConnection);
+							    	found = true;
+						    	}
+						    	
+						    	wordList = new ArrayList<String>();
+						    	wordList.add(id2);
+						    	if (definition.isWord(wordList))
+						    	{
+							    	WordConnection wordConnection = new WordConnection();
+							    	wordConnection.id2 =definition.id;
+						    		List<WordDefinition> wd1List = (List<WordDefinition>) _index.get(id1);
+						    		if (wd1List!=null && wd1List.size()==1)
+								    	wordConnection.id1 = wd1List.get(0).id;
+						    		else
+								    	wordConnection.id1 = id1;
+							    	wordConnection.relation = relation;
+								    System.out.println("2-Save "+relation+"("+wordConnection.id1+","+wordConnection.id2+")");
+							    	incrementConnection(wordConnection);
+							    	found = true;
+						    	}
+						    	
+						    	if ((id1List.size()==1 || (id1List.size()==2 && _index.get(id1List.get(0))==null)) && _index.get(id1)!=null && _index.get(id1).size()==1)
+						    	{
+						    		altDefinition = _index.get(id1).get(0);
+							    	WordConnection wordConnection = new WordConnection();
+							    	wordConnection.relation = relation;
+							    	wordConnection.id1 =altDefinition.id;
+						    		List<WordDefinition> wd2List = (List<WordDefinition>) _index.get(id2);
+						    		if (wd2List!=null && wd2List.size()==1)
+								    	wordConnection.id2 = wd2List.get(0).id;
+						    		else
+								    	wordConnection.id2 = id2;
+								    System.out.println("3-Save "+relation+"("+wordConnection.id1+","+wordConnection.id2+")");
+							    	incrementConnection(wordConnection);
+							    	found = true;
+						    	}
+						    	
+						    	if ((id2List.size()==1 || (id2List.size()==2 && _index.get(id2List.get(0))==null)) && _index.get(id2)!=null && _index.get(id2).size()==1)
+						    	{
+						    		altDefinition = _index.get(id2).get(0);
+							    	WordConnection wordConnection = new WordConnection();
+							    	wordConnection.id2 =altDefinition.id;
+						    		List<WordDefinition> wd1List = (List<WordDefinition>) _index.get(id1);
+						    		if (wd1List!=null && wd1List.size()==1)
+								    	wordConnection.id1 = wd1List.get(0).id;
+						    		else
+								    	wordConnection.id1 = id1;
+							    	wordConnection.relation = relation;
+								    System.out.println("4-Save "+relation+"("+wordConnection.id1+","+wordConnection.id2+")");
+							    	incrementConnection(wordConnection);
+							    	found = true;
+						    	}
+						    }
+			    		}
+			    	}
+				}
+			}
+		}
+		return found;
 	}
 }

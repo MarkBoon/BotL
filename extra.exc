@@ -13,7 +13,7 @@
 0000013 00 a 01 their 0 001 ! 00000015 a 0000 | Belonging to or associated with a person of unspecified sex; "she heard someone blow their nose loudly"
 0000014 00 a 01 our 0 001 ! 00000012 a 0000 | Belonging to or associated with the speaker and one or more other people previously mentioned or easily identified.
 0000015 00 a 01 our 0 001 ! 00000013 a 0000 | Belonging to or associated with people in general; "when we hear a sound, our brains identify the source quickly"
-0000016 00 a 01 ours 0 000 | Used to refer to a thing or things belonging to or associated with the speaker and one or more other people previously mentioned or...; "ours was the ugliest house on the block"; "this chat of ours is strictly between us"
+0000016 00 p 01 ours 0 000 | Used to refer to a thing or things belonging to or associated with the speaker and one or more other people previously mentioned or...; "ours was the ugliest house on the block"; "this chat of ours is strictly between us"
 0000017 00 p 01 mine 0 000 | Used to refer to a thing or things belonging to or associated with the speaker
 0000018 00 p 01 theirs 0 000 | Used to refer to a thing or things belonging to or associated with two or more people or things previously mentioned.
 0000019 00 p 01 yours 0 000 | Used to refer to a thing or things belonging to or associated with the person or people that the speaker is addressing.
@@ -102,7 +102,7 @@
 0000106 00 i 01 to 0 000 | Used with the base form of a verb to indicate that the verb is in the infinitive, in particular
 0000107 00 q 01 to 0 000 | Expressing motion in the direction of (a particular location); "my first visit to Africa"
 0000108 00 r 01 to 0 000 | So as to be closed or nearly closed; "he pulled the door to behind him"
-0000109 00 q 01 on 0 000 | Physically in contact with and supported by (a surface); "on the table was a water jug"
+0000109 00 q 02 on 0 upon 0 000 | Physically in contact with and supported by (a surface); "on the table was a water jug"
 0000110 00 r 01 on 0 000 | In contact with and supported by a surface.
 0000111 00 q 01 with 0 000 | Accompanied by (another person or thing); "steak with a bottle of red wine"
 0000112 00 q 01 with 0 000 | In the same direction as; "swim with the current"
@@ -138,6 +138,25 @@
 0000142 00 q 01 without 0 000 | In the absence of; "he went without her"
 0000143 00 r 01 without 0 000 | Outside; "the enemy without"
 0000144 00 c 01 without 0 000 | Without it being the case that
+0000145 00 q 01 against 0 000 |  In contact with so as to rest or press on; "leaned against the tree"
+0000146 00 q 01 against 0 000 | So as to come into forcible contact with; "waves dashing against the shore"
+0000147 00 q 01 onto 0 000 | Moving to a location on (the surface of something); "they went up onto the ridge"
+0000148 00 q 01 onto 0 000 | Moving aboard (a public conveyance) with the intention of traveling in it; "we got onto the train"
+0000149 00 q 01 among 0 000 | Surrounded by; in the company of
+0000150 00 q 01 among 0 000 | Being a member or members of (a larger set); "he was among the first 29 students enrolled"
+0000151 00 q 01 since 0 000 | In the intervening period between (the time mentioned) and the time under consideration, typically the present.
+0000152 00 q 01 since 0 000 | For the reason that: because; "delegates were delighted, since protection of rhino reserves will help protect other rare species"
+0000153 00 q 01 beside 0 000 | At the side of; next to; "on the table beside the bed"
+0000154 00 q 01 beside 0 000 | Compared with
+0000155 00 q 01 toward 0 towards 0 000 | In the direction of.
+0000156 00 r 01 besides 0 000 | In addition; as well; "I'm capable of doing the work, and a lot more besides"
+0000157 00 q 01 until 0 000 | Up to (the point in time or the event mentioned); "we have until October 11th to deliver"
+0000158 00 q 01 amid 0 000 | Surrounded by; in the middle of
+0000159 00 q 01 amid 0 000 | In an atmosphere or against a background of
+0000160 00 q 01 upon 0 000 | indicating a position reached by going up; "climb upon my knee"
+0000161 00 q 01 upon 0 000 | imminent for; "the weekend was upon us again"
+0000162 00 q 01 concerning 0 000 | imminent for; "the weekend was upon us again"
+0000163 00 a 02 toward 0 towards 0 000 | Going on; in progress
 0000200 00 x 01 must 0 000 | Be obliged to; should (expressing necessity); "you must show your ID card"
 0000201 00 x 01 would 0 000 | (expressing the conditional mood) Indicating the consequence of an imagined event or situation; "he would lose his job"
 0000202 00 x 01 could 0 000 | Used to indicate possibility; "they could be right
@@ -150,3 +169,5 @@
 0000209 00 x 01 can 0 000 | Be able to; "they can run fast"; "he can't afford it"
 0000210 00 x 01 may 0 000 | Expressing possibility; "they may succeed"
 0000211 00 x 01 have 0 000 | Used with a past participle to form the perfect, pluperfect, and future perfect tenses, and the conditional mood; "I have finished"
+0000212 00 x 01 do 0 000 | Used before a verb (except be, can, may, ought, shall, will) in questions and negative statements.
+0000213 00 x 01 be 0 000 | Used with a present participle to form continuous tenses; "they are coming"; "he had been reading"; "she will be waiting"

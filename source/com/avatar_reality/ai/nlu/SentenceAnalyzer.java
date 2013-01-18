@@ -63,6 +63,7 @@ public class SentenceAnalyzer
 	private String originalSentence;
 	private String[] originalTokens = new String[0];
 	private String[] tokens = new String[0];
+	@SuppressWarnings("unchecked")
 	private ArrayList<String>[] tokenLists = new ArrayList[0];
 	private String[] ids;
 
@@ -129,6 +130,7 @@ public class SentenceAnalyzer
 			@Override
 			public void actionPerformed(ActionEvent e) 
 			{
+//				dictionary.createAllConnections(SentenceAnalyzer.this);
 				String sentence = dictionary.getRandomSentence();
 				sentenceField.setText(sentence);
 				setSentence(sentence);
@@ -207,6 +209,7 @@ public class SentenceAnalyzer
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void setSentence(String sentence)
 	{
 		originalSentence = sentence;
@@ -309,7 +312,10 @@ public class SentenceAnalyzer
 						if ((isNoun && d.type==WordType.NOUN)
 						||  (isVerb && d.type==WordType.VERB)
 						||  (isAdjective && d.type==WordType.ADJECTIVE))
-							increaseRating(d.id, 1);
+						{
+							System.out.println("Increase rating by 7 because "+d+" is of type "+d.type);
+							increaseRating(d.id, 7);
+						}
 						
 						comboBoxModel.addElement(d);
 					}
@@ -466,6 +472,7 @@ public class SentenceAnalyzer
 			if (rating!=0)
 				System.out.println("Rating for "+dictionary.getDefinition(candidateID)+" increased by "+rating);
 			increaseRating(candidateID, rating);
+			System.out.println(wd.toString() + " - " + candidateMap.get(candidateID));
 		}		
 	}
 	
@@ -481,11 +488,14 @@ public class SentenceAnalyzer
 		if (wd==null)
 			return 0;
 
-		if (wd.line.toLowerCase().contains(originalSentence.toLowerCase()))
-			rating += 1000 / level;
-
 		if (up)
 		{
+			if (wd.line.toLowerCase().contains("\""+originalSentence.toLowerCase()+"\""))
+			{
+				System.out.println("Found "+wd+" in sentence definition at level "+level);
+				rating += 1000 / (level*level);
+			}
+
 			String via = "";
 			if (!id.equals(startId))
 				via = " via "+dictionary.getDefinition(startId);
@@ -495,15 +505,30 @@ public class SentenceAnalyzer
 				// Potential self-referencing problem, giving undesired boost.
 				if (connection.id1.equals(id) && hasConnection(startId, connection.id2, connection.relation))
 				{
-					System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection between "+dictionary.getDefinition(id)+" and "+dictionary.getDefinition(connection.id2)+via);
+					if (dictionary.getDefinition(connection.id2)==null)
+						System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection ("+connection.id+") between "+dictionary.getDefinition(id)+" and "+connection.id2+via);
+					else
+						System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection ("+connection.id+") between "+dictionary.getDefinition(id)+" and "+dictionary.getDefinition(connection.id2)+via);
 					rating += BASE_RATING/level;
 					increaseRating(connection.id2, BASE_RATING/level);
 				}
 				if (connection.id2.equals(id) &&  hasConnection(startId, connection.id1, connection.relation))
 				{
-					System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection between "+dictionary.getDefinition(id)+" and "+dictionary.getDefinition(connection.id1)+via);
+					if (dictionary.getDefinition(connection.id1)==null)
+						System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection ("+connection.id+") between "+dictionary.getDefinition(id)+" and "+connection.id1+via);
+					else
+						System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection ("+connection.id+") between "+dictionary.getDefinition(id)+" and "+dictionary.getDefinition(connection.id1)+via);
 					rating += BASE_RATING/level;
 					increaseRating(connection.id1, BASE_RATING/level);
+				}
+				if (wd.type==WordType.PREPOSITION && connection.relation.startsWith("prep_"))
+				{
+					if (hasPreposition(connection.relation, connection.id1, connection.id2))
+					{
+						System.out.println("Found "+logLevel+" level preposition "+connection.toString());
+						rating += BASE_RATING/level;
+						increaseRating(wd.id, BASE_RATING/level);
+					}
 				}
 			}
 		}
@@ -543,19 +568,11 @@ public class SentenceAnalyzer
     	
 	    for (TypedDependency dependency : connectionList)
 	    {
-	    	String compareRelation = dependency.reln().getShortName();
+	    	String compareRelation = dependency.reln().toString();
 	    	if (relation.equals(compareRelation))
 	    	{
 	    		ArrayList<String> compareList1 = tokenLists[dependency.gov().index()-1];
 	    		ArrayList<String> compareList2 = tokenLists[dependency.dep().index()-1];
-		    	//String compareId1 = dependency.gov().value();
-		    	//String compareId2 = dependency.dep().value();
-//		    	String verb = dictionary.getVerb(compareId1);
-//		    	if (verb!=null)
-//		    		compareId1 = verb;
-//		    	verb = dictionary.getVerb(compareId2);
-//		    	if (verb!=null)
-//		    		compareId2 = verb;
 		    	
 		    	if (definition1==null)
 		    	{
@@ -583,6 +600,38 @@ public class SentenceAnalyzer
 		return false;
 	}
 	
+	private boolean hasPreposition(String relation, String id1, String id2)
+	{
+    	WordDefinition definition1 = dictionary.getDefinition(id1);
+    	WordDefinition definition2 = dictionary.getDefinition(id2);
+	    for (TypedDependency dependency : connectionList)
+	    {
+	    	String compareRelation = dependency.reln().toString();
+	    	if (relation.equals(compareRelation))
+	    	{
+	    		ArrayList<String> compareList1 = tokenLists[dependency.gov().index()-1];
+	    		ArrayList<String> compareList2 = tokenLists[dependency.dep().index()-1];
+		    	
+		    	if (definition1==null)
+		    	{
+		    		if (compareList1.contains(id1) &&  definition2.isWord(compareList2))
+		    			return true;
+		    	}
+		    	else if (definition2==null)
+		    	{
+		    		if (compareList2.contains(id2) &&  definition1.isWord(compareList1))
+		    			return true;
+		    	}
+		    	else
+		    	{
+			    	if (definition1.isWord(compareList1) && definition2.isWord(compareList2))
+			    		return true;
+		    	}
+	    	}
+	    }
+		return false;
+	}
+
 	private void selectBestCandidates()
 	{
 		for (DefaultComboBoxModel model : listList)
@@ -616,7 +665,7 @@ public class SentenceAnalyzer
 	    System.out.println();
 	    for (TypedDependency dependency : connectionList)
 	    {
-	    	String relation = dependency.reln().getShortName();
+	    	String relation = dependency.reln().toString();
 	    	String id1 = dependency.gov().value();
 	    	String id2 = dependency.dep().value();
 		    System.out.println(relation+"("+id1+"-"+dependency.gov().index()+","+id2+"-"+dependency.dep().index()+")");
@@ -632,11 +681,12 @@ public class SentenceAnalyzer
 	    }
 	}
 	
-	private void createConnectionList(String line)
+	public List<TypedDependency> createConnectionList(String line)
 	{
 	    List<CoreLabel> rawWords = tokenizerFactory.getTokenizer(new StringReader(line)).tokenize();
 	  	Tree parse = lp.apply(rawWords);
 	    GrammaticalStructure gs = gsf.newGrammaticalStructure(parse);
-	    connectionList = gs.typedDependenciesCCprocessed(true);		
+	    connectionList = gs.typedDependenciesCCprocessed(true);
+	    return connectionList;
 	}
 }

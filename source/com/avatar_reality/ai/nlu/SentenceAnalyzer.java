@@ -502,6 +502,7 @@ public class SentenceAnalyzer
 
 			for (WordConnection connection : wd.connections)
 			{
+				int ratingIncrease = (wd.getOccurrences()*BASE_RATING)/level;
 				// Potential self-referencing problem, giving undesired boost.
 				if (connection.id1.equals(id) && hasConnection(startId, connection.id2, connection.relation))
 				{
@@ -509,8 +510,8 @@ public class SentenceAnalyzer
 						System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection ("+connection.id+") between "+dictionary.getDefinition(id)+" and "+connection.id2+via);
 					else
 						System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection ("+connection.id+") between "+dictionary.getDefinition(id)+" and "+dictionary.getDefinition(connection.id2)+via);
-					rating += BASE_RATING/level;
-					increaseRating(connection.id2, BASE_RATING/level);
+					rating += ratingIncrease;
+					increaseRating(connection.id2, ratingIncrease);
 				}
 				if (connection.id2.equals(id) &&  hasConnection(startId, connection.id1, connection.relation))
 				{
@@ -518,16 +519,16 @@ public class SentenceAnalyzer
 						System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection ("+connection.id+") between "+dictionary.getDefinition(id)+" and "+connection.id1+via);
 					else
 						System.out.println("Found "+logLevel+" level ["+connection.relation+"] connection ("+connection.id+") between "+dictionary.getDefinition(id)+" and "+dictionary.getDefinition(connection.id1)+via);
-					rating += BASE_RATING/level;
-					increaseRating(connection.id1, BASE_RATING/level);
+					rating += ratingIncrease;
+					increaseRating(connection.id1, ratingIncrease);
 				}
 				if (wd.type==WordType.PREPOSITION && connection.relation.startsWith("prep_"))
 				{
 					if (hasPreposition(connection.relation, connection.id1, connection.id2))
 					{
 						System.out.println("Found "+logLevel+" level preposition "+connection.toString());
-						rating += BASE_RATING/level;
-						increaseRating(wd.id, BASE_RATING/level);
+						rating += ratingIncrease;
+						increaseRating(wd.id, ratingIncrease);
 					}
 				}
 			}

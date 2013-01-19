@@ -212,6 +212,9 @@ public class Dictionary
 			verb = word.substring(0,word.length()-2);
 			if (isVerb(verb))
 				add(verb,list);
+			verb = word.substring(0,word.length()-1);
+			if (isVerb(verb))
+				add(verb,list);		
 		}
 		else if (word.endsWith("s"))
 		{
@@ -363,6 +366,7 @@ public class Dictionary
 			WordConnection connection = (WordConnection)query.uniqueResult();
 	    	if (connection!=null)
 	    	{
+	    		wordConnection.occurences++;
 	    		connection.occurences++;
 	    		session.update(connection);
 	        }

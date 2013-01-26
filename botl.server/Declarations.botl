@@ -1,0 +1,136 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<BOT-L>
+	<declare>
+		<namespace name="math">
+			declare namespace math = "java:java.lang.Math"
+		</namespace>
+		<namespace name="bot">
+			declare namespace bot = "java:com.avatar_reality.ai.BotCommandProcessor"
+		</namespace>
+		<namespace>
+			declare namespace ar = "http://www.avatar-reality.com"	
+		</namespace>
+
+		<function name='local:get' always="true">
+			declare function local:get ( $arg as xs:string ) as xs:string
+			{
+				let $result := collection()/BOT-L/memory/variable[@name=$arg]/@value
+				return ( if ($result) then $result/string() else fn:concat('"',fn:concat($arg,' not found"')) )
+			}
+		</function>
+		<function name='local:set' always="true">
+			declare updating function local:set ( $name as xs:string, $value as xs:string )
+			{
+				if (collection()/BOT-L/memory/variable[@name=$name]) then
+					replace value of node collection()/BOT-L/memory/variable[@name=$name]/@value with $value
+				else
+					insert node element variable { attribute name {$name} , attribute value {$value} } into collection()/BOT-L/memory
+			}
+		</function>
+		<function name='local:personalGet' always="true">
+			declare function local:personalGet ( $arg as xs:string ) as xs:string
+			{
+				let $id as xs:string := bot:transientGet('_from_')
+				let $result := collection()/BOT-L/memory/personal[@name=$arg and @id=$id]/@value
+				return ( if ($result) then $result/string() else fn:concat('"',fn:concat($arg,' not found"')) )
+			}
+		</function>
+		<function name='local:personalSet' always="true">
+			declare updating function local:personalSet ( $name as xs:string, $value as xs:string )
+			{
+				let $id  as xs:string := bot:transientGet('_from_')
+				return ( if (collection()/BOT-L/memory/personal[@name=$name and @id=$id]) then
+					replace value of node collection()/BOT-L/memory/personal[@name=$name and @id=$id]/@value with $value
+				else
+					insert node element personal { attribute name {$name} , attribute id {$id} , attribute value {$value} } into collection()/BOT-L/memory )
+			}
+		</function>
+		<function name='local:args1' always="true">
+			declare function local:args1 ( $arg as xs:string ) as xs:string
+			{
+				fn:replace(bot:transientGet('_input_'), bot:transientGet('_pattern_'),$arg,'i')
+			}
+		</function>
+		<function name='local:args' always="true">
+			declare function local:args ( $arg as xs:string ) as xs:string
+			{
+			let $in := bot:transientGet('_input_')
+			let $pattern := bot:transientGet('_pattern_')
+			let $result := fn:replace($in, $pattern,$arg,'i')
+			return ( $result )
+			}
+		</function>
+		
+		<function name='ar:choose'>
+			declare function ar:choose ( $arg as xs:string* ) as xs:string
+			{
+				let $count := fn:count($arg)
+				let $random := math:floor(math:random() * $count) + 1
+				return $arg[xs:integer($random)]
+			}
+		</function>
+		<function name='ar:distance'>
+			declare function ar:distance ( $player as xs:string ) as xs:double
+			{
+				let $botLocation := xs:string(collection()/BOT-L/player-info/bot-info/Location[@name='location'])
+				let $playerLocation := xs:string(collection()/BOT-L/player-info/entity[@entityName=$player]/Location[@name='location'])
+				return ( if( $botLocation and $playerLocation) then 
+					bot:getDistance($botLocation,$playerLocation)
+				else
+					xs:double(1.0) )
+			}
+		</function>
+		<function name='ar:closest-distance'>
+			declare function ar:closest-distance () as xs:double
+			{
+				fn:min( for $entity in collection()/BOT-L/player-info/entity return ar:distance($entity/@entityName) )
+			}
+		</function>
+		<function name='ar:sayFacing'>
+			declare function ar:say ( $text as xs:string )
+			{
+				let $player := %_from_
+				let $playerLocation := xs:string(collection()/BOT-L/player-info/entity[@entityName=$player]/Location[@name='location'])
+				return ( bot:faceTo($playerLocation), bot:say($text) )
+			}
+		</function>
+		<function name='ar:say'>
+			declare function ar:say ( $text as xs:string )
+			{
+				let $player := %_from_
+				return ( bot:say($text) )
+			}
+		</function>
+		<function name='ar:choosePhrase'>
+			<use name="ar:say"/>
+			<use name="ar:choose"/>
+			declare function ar:choosePhrase ( $arg as xs:string* )
+			{
+				ar:say(ar:choose($arg))
+			}
+		</function>
+		<function name='ar:noEventIn'>
+			declare function ar:noEventIn ( $time as xs:string ) as xs:boolean
+			{
+				let $botName := %_botName_
+				let $lastEventTime := xs:dateTime((collection()/BOT-L/event[@from=$botName]/@dateTime)[1])
+				let $now := fn:current-dateTime()
+				let $duration := $now - $lastEventTime
+				return ($duration &gt; xs:dayTimeDuration($time))
+			}
+		</function>
+		
+		<variable name='~a' value='(a|an|the)'/>
+		<variable name='~it' value='(it|that|those|these|they|them)'/>
+		<variable name='~you' value='(you|u)'/>
+		<variable name='~your' value='(your|ur)'/>
+		<variable name='~are' value='(are|r)'/>
+		<variable name='~bm' value='(bm|blue-mars)'/>
+		<variable name='~sl' value='(sl|second-life)'/>
+		<variable name='~what' value="(what|what's|whats)"/>
+		<variable name='~type' value='(type|kind|sort)'/>
+		<variable name='~how' value='(how|where)'/>
+		<variable name='~hi' value='(hi|hey|hello|hullo|hiya)'/>
+		<variable name='~bye' value='(bye|goodbye|good-bye|ciao|cya)'/>
+	</declare>
+</BOT-L>

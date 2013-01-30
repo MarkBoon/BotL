@@ -5,28 +5,37 @@ public class MultiplicationNeuron
 {
 	private static final double THRESHOLD = 0.01;
 
-	double output;
 	double[] input;
 	
-	synchronized public void adjustInput(double value, int index)
+	synchronized public void adjustInput(double value, int index, boolean propagate)
 	{
-		double oldOutput = output;
-		output /= input[index];
-		output *= value;
 		input[index] = value;
-		if (Math.abs(output-oldOutput)>THRESHOLD)
+		double oldOutput = output;
+		double newOutput = input[0];
+		for (int i=1; i<input.length; i++)
+			newOutput *= input[i];
+		output = newOutput;
+		if (propagate && Math.abs(output-oldOutput)>THRESHOLD)
 			fireChange();
 	}
 
 	@Override
 	void createConnection(Neuron source)
 	{
-		double[] newInput = new double[input.length+1];
+		createConnection(source, true);
+	}
+	
+	void createConnection(Neuron source, boolean propagate)
+	{
+		int length = 1;
+		if (input!=null)
+			length = input.length+1;
+		double[] newInput = new double[length];
 
-		if (input.length>0)
+		if (input!=null && input.length>0)
 			System.arraycopy(input, 0, newInput, 0, input.length);
 		input = newInput;
 		
-		source.addOutputConnection(new Connection(source,this,input.length-1));
+		source.addOutputConnection(new Connection(source,this,input.length-1,propagate));
 	}
 }

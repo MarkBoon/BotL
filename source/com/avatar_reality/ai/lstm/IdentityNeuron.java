@@ -3,10 +3,11 @@ package com.avatar_reality.ai.lstm;
 public class IdentityNeuron
 	extends Neuron
 {
-	synchronized public void adjustInput(double value, int index)
+	synchronized public void adjustInput(double value, int index, boolean propagate)
 	{
 		output = value;
-		fireChange();
+		if (propagate)
+			fireChange();
 	}
 
 	@Override

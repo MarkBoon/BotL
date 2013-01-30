@@ -7,10 +7,10 @@ public abstract class Neuron
 {
 	static final double THRESHOLD = 0.01;
 	
-	double output;
+	double output = 0.0;
 	List<Connection> outputConnections = new ArrayList<Connection>();
 	
-	abstract void adjustInput(double value, int index);
+	abstract void adjustInput(double value, int index, boolean propagate);
 	abstract void createConnection(Neuron source);
 	
 	protected void fireChange()

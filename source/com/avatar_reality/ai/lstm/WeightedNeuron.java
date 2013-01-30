@@ -8,10 +8,13 @@ public abstract class WeightedNeuron
 
 	void createConnection(Neuron source)
 	{
-		double[] newInput = new double[input.length+1];
-		double[] newWeights = new double[weights.length+1];
+		int length = 1;
+		if (input!=null)
+			length = input.length+1;
+		double[] newInput = new double[length];
+		double[] newWeights = new double[length];
 
-		if (input.length>0)
+		if (input!=null && input.length>0)
 		{
 			System.arraycopy(input, 0, newInput, 0, input.length);
 			System.arraycopy(weights, 0, newWeights, 0, weights.length);

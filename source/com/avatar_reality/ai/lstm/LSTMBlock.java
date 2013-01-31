@@ -2,8 +2,6 @@ package com.avatar_reality.ai.lstm;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.io.StringWriter;
-import java.io.Writer;
 
 public class LSTMBlock
 	extends Neuron
@@ -30,6 +28,7 @@ public class LSTMBlock
 		
 		memoryNeuron.createConnection(inhibitNeurons[0]);
 		memoryNeuron.createConnection(inhibitNeurons[1]);
+		memoryNeuron.weights[1] = 1.0;
 		
 		inhibitNeurons[0].createConnection(sigmoidNeurons[0]);
 		inhibitNeurons[0].createConnection(sigmoidNeurons[1]);

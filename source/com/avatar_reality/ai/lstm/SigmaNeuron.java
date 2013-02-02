@@ -2,7 +2,7 @@ package com.avatar_reality.ai.lstm;
 
 public class SigmaNeuron extends WeightedNeuron 
 {
-	private static final double THRESHOLD = 0.01;
+	private static final double THRESHOLD = 0.0;
 
 	synchronized public void adjustInput(double value, int index, boolean propagate)
 	{

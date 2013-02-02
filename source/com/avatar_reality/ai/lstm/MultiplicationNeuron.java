@@ -3,7 +3,7 @@ package com.avatar_reality.ai.lstm;
 public class MultiplicationNeuron
 	extends Neuron
 {
-	private static final double THRESHOLD = 0.01;
+	private static final double THRESHOLD = 0.0;
 
 	double[] input;
 	

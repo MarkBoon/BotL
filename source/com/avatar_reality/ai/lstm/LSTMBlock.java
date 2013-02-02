@@ -15,8 +15,10 @@ public class LSTMBlock
 	public LSTMBlock()
 	{
 		sigmoidNeurons = new SigmoidNeuron[4];
-		for (int i=0; i<4; i++)
+		sigmoidNeurons[0] = new SigmoidNeuron(2.0, -1.0);
+		for (int i=1; i<4; i++)
 			sigmoidNeurons[i] = new SigmoidNeuron();
+		
 		inhibitNeurons = new MultiplicationNeuron[2];
 		for (int i=0; i<2; i++)
 			inhibitNeurons[i] = new MultiplicationNeuron();
@@ -128,6 +130,24 @@ public class LSTMBlock
 		neuron.inputNeurons[0].output = 1.0;
 		neuron.inputNeurons[0].fireChange();
 		neuron.inputNeurons[2].output = 1.0;
+		neuron.inputNeurons[2].fireChange();
+		neuron.print(System.out);
+//		neuron.inputNeurons[2].output = 0.0;
+//		neuron.inputNeurons[2].fireChange();
+//		neuron.print(System.out);
+		neuron.sigmoidNeurons[1].train(1.0);
+		neuron.sigmoidNeurons[2].train(1.0);
+		neuron.sigmoidNeurons[3].train(1.0);
+		neuron.print(System.out);
+		neuron.sigmoidNeurons[1].fireChange();
+		neuron.sigmoidNeurons[2].fireChange();
+		neuron.sigmoidNeurons[3].fireChange();
+		neuron.print(System.out);
+		neuron.inputNeurons[0].output = 0.0;
+		neuron.inputNeurons[0].fireChange();
+		neuron.inputNeurons[1].output = 1.0;
+		neuron.inputNeurons[1].fireChange();
+		neuron.inputNeurons[2].output = 0.0;
 		neuron.inputNeurons[2].fireChange();
 		neuron.print(System.out);
 	}

@@ -7,17 +7,17 @@ public class Connection
 	Neuron _target;
 	boolean _propagate;
 	
-	public Connection(Neuron source, Neuron target, int index, boolean propagate)
+	public Connection(Neuron source, Neuron target, int targetIndex, boolean propagate)
 	{
 		_source = source;
 		_target = target;
-		_index = index;
+		_index = targetIndex;
 		_propagate = propagate;
 	}
 	
-	public Connection(Neuron source, Neuron target, int index)
+	public Connection(Neuron source, Neuron target, int targetIndex)
 	{
-		this(source,target,index,true);
+		this(source,target,targetIndex,true);
 	}
 	
 	public void fire(double value)

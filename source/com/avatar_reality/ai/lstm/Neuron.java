@@ -13,6 +13,9 @@ public abstract class Neuron
 	abstract void adjustInput(double value, int index, boolean propagate);
 	abstract void createConnection(Neuron source);
 	
+	private int _x;
+	private int _y;
+	
 	protected void fireChange()
 	{
 		for (Connection c : outputConnections)
@@ -22,5 +25,22 @@ public abstract class Neuron
 	public void addOutputConnection(Connection c)
 	{
 		outputConnections.add(c);
+	}
+	
+	public int getX() 
+	{
+		return _x;
+	}
+	public void setX(int x) 
+	{
+		this._x = x;
+	}
+	public int getY() 
+	{
+		return _y;
+	}
+	public void setY(int y) 
+	{
+		this._y = y;
 	}
 }

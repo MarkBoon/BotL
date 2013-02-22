@@ -9,11 +9,11 @@ public class SigmaNeuron extends WeightedNeuron
 		double oldValue = input[index];
 		if (Math.abs(value-oldValue)>THRESHOLD)
 		{
-			double oldSum = output;
+			double oldSum = getOutput();
 			input[index] = value;
-			output -= weights[index]*oldValue;
-			output += weights[index]*value;
-			if (propagate && Math.abs(output-oldSum)>THRESHOLD)
+			setOutput(getOutput() - weights[index]*oldValue);
+			setOutput(getOutput() + weights[index]*value);
+			if (propagate && Math.abs(getOutput()-oldSum)>THRESHOLD)
 				fireChange();
 		}
 	}

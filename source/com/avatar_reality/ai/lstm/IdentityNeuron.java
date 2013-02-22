@@ -5,7 +5,7 @@ public class IdentityNeuron
 {
 	synchronized public void adjustInput(double value, int index, boolean propagate)
 	{
-		output = value;
+		setOutput(value);
 		if (propagate)
 			fireChange();
 	}

@@ -79,18 +79,18 @@ public class LSTMBlock
 				array[1][i*(inputNeurons.length+1)+j] = sigmoidNeurons[i].weights[j];
 			}
 		}
-		array[2][0] = sigmoidNeurons[0].output;
-		array[2][1] = sigmoidNeurons[1].output;
-		array[2][8] = sigmoidNeurons[2].output;
-		array[2][9] = memoryNeuron.output;
+		array[2][0] = sigmoidNeurons[0].getOutput();
+		array[2][1] = sigmoidNeurons[1].getOutput();
+		array[2][8] = sigmoidNeurons[2].getOutput();
+		array[2][9] = memoryNeuron.getOutput();
 		
-		array[3][0] = inhibitNeurons[0].output;
-		array[3][8] = inhibitNeurons[1].output;
+		array[3][0] = inhibitNeurons[0].getOutput();
+		array[3][8] = inhibitNeurons[1].getOutput();
 		array[4][0] = memoryNeuron.weights[0];
 		array[4][1] = memoryNeuron.weights[1];
-		array[5][0] = memoryNeuron.output;
-		array[5][1] = sigmoidNeurons[3].output;
-		array[6][0] = outputNeuron.output;
+		array[5][0] = memoryNeuron.getOutput();
+		array[5][1] = sigmoidNeurons[3].getOutput();
+		array[6][0] = outputNeuron.getOutput();
 		
 		for (int j=0; j<array[0].length-1; j++)
 		{
@@ -127,9 +127,9 @@ public class LSTMBlock
 		neuron.createConnection(null);
 		neuron.createConnection(null);
 		neuron.createConnection(null);
-		neuron.inputNeurons[0].output = 1.0;
+		neuron.inputNeurons[0].setOutput(1.0);
 		neuron.inputNeurons[0].fireChange();
-		neuron.inputNeurons[2].output = 1.0;
+		neuron.inputNeurons[2].setOutput(1.0);
 		neuron.inputNeurons[2].fireChange();
 		neuron.print(System.out);
 //		neuron.inputNeurons[2].output = 0.0;
@@ -143,11 +143,11 @@ public class LSTMBlock
 		neuron.sigmoidNeurons[2].fireChange();
 		neuron.sigmoidNeurons[3].fireChange();
 		neuron.print(System.out);
-		neuron.inputNeurons[0].output = 0.0;
+		neuron.inputNeurons[0].setOutput(0.0);
 		neuron.inputNeurons[0].fireChange();
-		neuron.inputNeurons[1].output = 1.0;
+		neuron.inputNeurons[1].setOutput(1.0);
 		neuron.inputNeurons[1].fireChange();
-		neuron.inputNeurons[2].output = 0.0;
+		neuron.inputNeurons[2].setOutput(0.0);
 		neuron.inputNeurons[2].fireChange();
 		neuron.print(System.out);
 	}

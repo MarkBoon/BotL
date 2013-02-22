@@ -29,10 +29,11 @@ public class SigmoidNeuron
 		double newOutput = sigmoid(_weightedSum);
 		if (propagate /*&& Math.abs(newOutput-output)>THRESHOLD*/)
 		{
-			output = newOutput;
+			setOutput(newOutput);
 			fireChange();
 		}
-		output = newOutput;
+		else
+			setOutput(newOutput);
 	}
 	
 	public void train(double targetValue)
@@ -40,7 +41,7 @@ public class SigmoidNeuron
 		double error = 0.0;
 		do
 		{
-			double sign = Math.signum(targetValue-output);
+			double sign = Math.signum(targetValue-getOutput());
 			int index = (int)(Math.random()*weights.length);
 			if (input[index]!=0.0)
 			{
@@ -48,9 +49,9 @@ public class SigmoidNeuron
 				_weightedSum -= weights[index]*input[index];
 				weights[index] += delta;
 				_weightedSum += weights[index]*input[index];
-				output = sigmoid(_weightedSum);
+				setOutput(sigmoid(_weightedSum));
 			}
-			error = Math.abs(targetValue-output);
+			error = Math.abs(targetValue-getOutput());
 		} 
 		while (error > THRESHOLD);
 	}

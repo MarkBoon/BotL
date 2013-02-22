@@ -10,12 +10,12 @@ public class MultiplicationNeuron
 	synchronized public void adjustInput(double value, int index, boolean propagate)
 	{
 		input[index] = value;
-		double oldOutput = output;
+		double oldOutput = getOutput();
 		double newOutput = input[0];
 		for (int i=1; i<input.length; i++)
 			newOutput *= input[i];
-		output = newOutput;
-		if (propagate && Math.abs(output-oldOutput)>THRESHOLD)
+		setOutput(newOutput);
+		if (propagate && Math.abs(getOutput()-oldOutput)>THRESHOLD)
 			fireChange();
 	}
 

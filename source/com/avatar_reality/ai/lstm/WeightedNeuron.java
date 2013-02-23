@@ -21,7 +21,7 @@ public abstract class WeightedNeuron
 		}
 		input = newInput;
 		weights = newWeights;
-		weights[weights.length-1] = Math.random()*0.2-0.1;
+		weights[weights.length-1] = 0.1; //Math.random()*0.2-0.1;
 		
 		source.addOutputConnection(new Connection(source,this,input.length-1));
 	}

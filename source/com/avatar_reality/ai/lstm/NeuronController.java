@@ -1,5 +1,6 @@
 package com.avatar_reality.ai.lstm;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayDeque;
@@ -17,6 +18,7 @@ public class NeuronController
 	{
 		_propertyChangeSupport = new PropertyChangeSupport(this);
 		_actionQueue = new ArrayDeque<Neuron>();
+		
 	}
 	
 	public Neuron getSelectedNeuron() 
@@ -39,10 +41,41 @@ public class NeuronController
 	public void setNetwork(NeuralNetwork network) 
 	{
 		_network = network;
+		_network.addPropertyChangeListener(new PropertyChangeListener()
+		{
+			@Override
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				Neuron n = (Neuron)evt.getSource();
+				if (n.hasOutputConnections())
+					addToQueue(n);
+			}
+		});
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
 		_propertyChangeSupport.addPropertyChangeListener(listener);
+	}
+	
+	public void addToQueue(Neuron n)
+	{
+		_actionQueue.add(n);
+	}
+	
+	public void doStep()
+	{
+		Neuron n = _actionQueue.poll();
+		setSelectedNeuron(n);
+		if (n!=null)
+		{
+			n.fireChange();
+		}
+	}
+	
+	public void doRun()
+	{
+		while (!_actionQueue.isEmpty())
+			doStep();
 	}
 }

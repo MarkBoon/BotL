@@ -15,9 +15,9 @@ public class LSTMBlock
 	public LSTMBlock()
 	{
 		sigmoidNeurons = new SigmoidNeuron[4];
-		sigmoidNeurons[0] = new SigmoidNeuron(2.0, -1.0);
+		sigmoidNeurons[0] = new SigmoidNeuron("LSTM input-0", 2.0, -1.0);
 		for (int i=1; i<4; i++)
-			sigmoidNeurons[i] = new SigmoidNeuron();
+			sigmoidNeurons[i] = new SigmoidNeuron("LSTM input-"+i);
 		
 		inhibitNeurons = new MultiplicationNeuron[2];
 		for (int i=0; i<2; i++)

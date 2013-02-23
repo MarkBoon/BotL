@@ -12,6 +12,9 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -25,7 +28,7 @@ public class NetworkPanel
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final int CELL_SIZE = 50;
+	private static final int CELL_SIZE = 60;
 	private static final int FONT_SIZE = 12;
 	
 	int _nrInputNodes;
@@ -42,11 +45,15 @@ public class NetworkPanel
 
 	NeuronController _controller;
 	Neuron _selectedNeuron;
+	Neuron _previousSelectedNeuron;
+	Graphics2D _screenBuffer;
+	BufferedImage _bufferedImage;
 	
 	public NetworkPanel(NeuronController controller)
 	{
 		_controller = controller;
 		_selectedNeuron = null;
+		_previousSelectedNeuron = controller.getNetwork().getInputNodes()[0];
 		
 		_nrInputNodes = controller.getNetwork().getInputNodes().length;
 		_nrHiddenNodes = controller.getNetwork().getHiddenNodes().length;
@@ -91,12 +98,48 @@ public class NetworkPanel
 					}
 				}
 			);
+		
+		controller.getNetwork().addPropertyChangeListener(new PropertyChangeListener()
+			{
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) 
+				{
+					Graphics2D g2d = (Graphics2D)_bufferedImage.getGraphics();
+					if (evt.getSource()==_selectedNeuron)
+						paintCell(g2d, (Neuron)evt.getSource(), Color.RED);
+					else
+						paintCell(g2d, (Neuron)evt.getSource(), Color.BLACK);
+					getGraphics().drawImage(_bufferedImage,0,0,null);
+					//update(getGraphics());
+				}
+			});
+		
+		controller.addPropertyChangeListener(new PropertyChangeListener()
+			{
+				@Override
+				public void propertyChange(PropertyChangeEvent evt) 
+				{
+					_selectedNeuron = _controller.getSelectedNeuron();
+					update(getGraphics());
+				}
+			});
 	}
 	
 	public void paint(Graphics g)
 	{
-		Graphics2D g2d = (Graphics2D)g;
+		if (_bufferedImage==null)
+		{
+			_bufferedImage = new BufferedImage(_width, _height, BufferedImage.TYPE_INT_RGB);
+			Graphics2D g2d = (Graphics2D)_bufferedImage.getGraphics();
+			g2d.setBackground(Color.LIGHT_GRAY);
+			g2d.clearRect(0, 0, _width, _height);
+		}
+		
+		Graphics2D g2d = (Graphics2D)_bufferedImage.getGraphics();
 		Font f = new Font("Courier", Font.PLAIN, FONT_SIZE);
+		
+		g2d.setBackground(Color.LIGHT_GRAY);
+		g2d.clearRect(0, 0, _width, _height);
 		
 		g2d.setFont(f);	
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);
@@ -104,13 +147,16 @@ public class NetworkPanel
 		_fontWidth = g2d.getFontMetrics().getMaxAdvance();
 		_fontHeight = g2d.getFontMetrics().getHeight();
 		
-		for (Neuron n : _controller.getNetwork().getInputNodes())
-			drawConnections(g2d, n, Color.BLACK);
-		for (Neuron n : _controller.getNetwork().getHiddenNodes())
-			drawConnections(g2d, n, Color.BLACK);
-	
-		if (_selectedNeuron!=null)
-			drawConnections(g2d, _selectedNeuron, Color.BLUE);
+		//if (_selectedNeuron!=_previousSelectedNeuron)
+		{
+			for (Neuron n : _controller.getNetwork().getInputNodes())
+				drawConnections(g2d, n, Color.GRAY);
+			for (Neuron n : _controller.getNetwork().getHiddenNodes())
+				drawConnections(g2d, n, Color.GRAY);
+			
+			if (_selectedNeuron!=null)
+				drawConnections(g2d, _selectedNeuron, Color.BLUE);
+		}
 		
 		paintInput(g2d);
 		paintOutput(g2d);
@@ -118,6 +164,9 @@ public class NetworkPanel
 		
 		if (_selectedNeuron!=null)
 			paintCell(g2d, _selectedNeuron, Color.RED);
+		
+		getGraphics().drawImage(_bufferedImage,0,0,null);
+		_previousSelectedNeuron = _selectedNeuron;
 	}
 
 	public void paintInput(Graphics2D g)
@@ -140,15 +189,18 @@ public class NetworkPanel
 	
 	public void paintCell(Graphics2D g, Neuron n, Color color)
 	{
+		//if (!n.hasChanged())
+		//	return;
 		g.setColor(Color.WHITE);
 		g.fill(new Ellipse2D.Double(n.getX(), n.getY(), CELL_SIZE, CELL_SIZE));
 		g.setColor(color);
 		g.draw(new Ellipse2D.Double(n.getX(), n.getY(), CELL_SIZE, CELL_SIZE));
-		String value = Double.toString(n.getOutput());
+		String value = String.format("%1$1.2g", n.getOutput());
 		int xOffset = CELL_SIZE/2 - _fontMetrics.stringWidth(value)/2;
 		int yOffset = 1+CELL_SIZE/2 + _fontMetrics.getAscent()/2;
 		g.setColor(color);
 		g.drawString(value,n.getX()+xOffset,n.getY()+yOffset);
+		n.setHasChanged(false);
 	}
 	
 	public void drawConnections(Graphics2D g, Neuron n, Color color)
@@ -199,7 +251,7 @@ public class NetworkPanel
 		else
 			_selectedNeuron = null;
 		_controller.setSelectedNeuron(_selectedNeuron);
-		update(getGraphics());
+		//update(getGraphics());
 	}
 
 	public static void main(String[] args)

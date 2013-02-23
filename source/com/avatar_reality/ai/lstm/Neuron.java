@@ -11,7 +11,7 @@ public abstract class Neuron
 	
 	static final double THRESHOLD = 0.01;
 	
-	private double output = 0.0;
+	protected double output = 0.0;
 	List<Connection> outputConnections = new ArrayList<Connection>();
 	
 	abstract void adjustInput(double value, int index, boolean propagate);
@@ -19,8 +19,16 @@ public abstract class Neuron
 	
 	private int _x;
 	private int _y;
+	private boolean _hasChanged = true;
 	
 	private PropertyChangeSupport _propertyChangeSupport = new PropertyChangeSupport(this);
+	
+	protected String _label = "";
+	
+	public String toString()
+	{
+		return _label+": "+output;
+	}
 	
 	protected void fireChange()
 	{
@@ -59,7 +67,16 @@ public abstract class Neuron
 	{
 		double oldValue = output;
 		output = newValue;
-		_propertyChangeSupport.firePropertyChange(OUTPUT_PROPERTY, oldValue, newValue);
+		if (oldValue!=newValue)
+		{
+			_propertyChangeSupport.firePropertyChange(OUTPUT_PROPERTY, oldValue, newValue);
+			setHasChanged(true);
+		}
+	}
+	
+	public boolean hasOutputConnections()
+	{
+		return !outputConnections.isEmpty();
 	}
 	
 	public void addPropertyChangeListener(PropertyChangeListener listener)
@@ -70,5 +87,15 @@ public abstract class Neuron
 	public void removePropertyChangeListener(PropertyChangeListener listener)
 	{
 		_propertyChangeSupport.removePropertyChangeListener(listener);
+	}
+	
+	public boolean hasChanged() 
+	{
+		return _hasChanged;
+	}
+	
+	public void setHasChanged(boolean hasChanged) 
+	{
+		_hasChanged = hasChanged;
 	}
 }

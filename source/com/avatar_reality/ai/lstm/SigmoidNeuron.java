@@ -9,15 +9,16 @@ public class SigmoidNeuron
 	double _scale = 1.0;
 	double _offset = 0.0;
 	
-	public SigmoidNeuron(double scale, double offset)
+	public SigmoidNeuron(String label, double scale, double offset)
 	{
 		_scale = scale;
 		_offset = offset;
+		_label = label;
 	}
 	
-	public SigmoidNeuron()
+	public SigmoidNeuron(String label)
 	{
-		this(1.0, 0.0);
+		this(label, 1.0, 0.0);
 	}
 	
 	synchronized public void adjustInput(double value, int index, boolean propagate)
@@ -30,10 +31,13 @@ public class SigmoidNeuron
 		if (propagate /*&& Math.abs(newOutput-output)>THRESHOLD*/)
 		{
 			setOutput(newOutput);
-			fireChange();
+//			fireChange();
 		}
 		else
-			setOutput(newOutput);
+		{
+			output = newOutput;
+			//setOutput(newOutput);
+		}
 	}
 	
 	public void train(double targetValue)

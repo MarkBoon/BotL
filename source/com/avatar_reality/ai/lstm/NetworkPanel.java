@@ -15,6 +15,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -94,7 +95,7 @@ public class NetworkPanel
 				{
 					public void mouseClicked(MouseEvent event)
 					{
-						handleMouseClick(event.getX(),event.getY());
+						handleMouseClick(event);
 					}
 				}
 			);
@@ -150,12 +151,15 @@ public class NetworkPanel
 		//if (_selectedNeuron!=_previousSelectedNeuron)
 		{
 			for (Neuron n : _controller.getNetwork().getInputNodes())
-				drawConnections(g2d, n, Color.GRAY);
+				drawConnections(g2d, n.outputConnections, Color.GRAY);
 			for (Neuron n : _controller.getNetwork().getHiddenNodes())
-				drawConnections(g2d, n, Color.GRAY);
+				drawConnections(g2d, n.outputConnections, Color.GRAY);
 			
 			if (_selectedNeuron!=null)
-				drawConnections(g2d, _selectedNeuron, Color.BLUE);
+			{
+				drawConnections(g2d, _selectedNeuron.outputConnections, Color.BLUE);
+				drawConnections(g2d, _selectedNeuron.inputConnections, Color.GREEN);
+			}
 		}
 		
 		paintInput(g2d);
@@ -203,11 +207,11 @@ public class NetworkPanel
 		n.setHasChanged(false);
 	}
 	
-	public void drawConnections(Graphics2D g, Neuron n, Color color)
+	public void drawConnections(Graphics2D g, List<Connection> list, Color color)
 	{
 		g.setColor(color);
 		int offset = CELL_SIZE/2;
-		for (Connection c : n.outputConnections)
+		for (Connection c : list)
 			g.drawLine(c._source.getX()+offset, c._source.getY()+offset, c._target.getX()+offset, c._target.getY()+offset);
 	}
 
@@ -216,8 +220,11 @@ public class NetworkPanel
 		return _minimumSize;
 	}
 	
-	public void handleMouseClick(int x, int y)
+	public void handleMouseClick(MouseEvent event)
 	{
+		int x = event.getX();
+		int y = event.getY();
+
 		Neuron n = null;
 		if (y<CELL_SIZE*2)
 		{
@@ -251,6 +258,11 @@ public class NetworkPanel
 		else
 			_selectedNeuron = null;
 		_controller.setSelectedNeuron(_selectedNeuron);
+		if (event.getClickCount()>1)
+		{
+			System.out.println("Add "+_selectedNeuron+" to queue");
+			_controller.addToQueue(_selectedNeuron);
+		}
 		//update(getGraphics());
 	}
 
@@ -269,7 +281,7 @@ public class NetworkPanel
 		
 		JFrame window = new JFrame();
 		window.setLocation(200, 200);
-		window.setSize(networkPanel._width+100, networkPanel._height+20);
+		window.setSize(networkPanel._width+200, networkPanel._height+20);
 		window.setContentPane(panel);
 		//window.pack();
 		window.setVisible(true);

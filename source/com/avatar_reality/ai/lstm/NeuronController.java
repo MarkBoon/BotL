@@ -71,6 +71,8 @@ public class NeuronController
 		{
 			n.fireChange();
 		}
+//		else
+//			_network.reset();
 	}
 	
 	public void doRun()

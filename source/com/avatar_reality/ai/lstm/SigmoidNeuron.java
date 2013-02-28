@@ -8,6 +8,7 @@ public class SigmoidNeuron
 	double _weightedSum;
 	double _scale = 1.0;
 	double _offset = 0.0;
+	double _changeRate = 0.25;
 	
 	public SigmoidNeuron(String label, double scale, double offset)
 	{
@@ -23,10 +24,15 @@ public class SigmoidNeuron
 	
 	synchronized public void adjustInput(double value, int index, boolean propagate)
 	{
-		double oldValue = input[index];
+//		double oldValue = input[index];
 		input[index] = value;
-		_weightedSum -= weights[index]*oldValue;
-		_weightedSum += weights[index]*value;
+//		if (hasChanged())
+			recompute();
+//		else
+//		{
+//			_weightedSum -= weights[index]*oldValue;
+//			_weightedSum += weights[index]*value;
+//		}
 		double newOutput = sigmoid(_weightedSum);
 		if (propagate /*&& Math.abs(newOutput-output)>THRESHOLD*/)
 		{
@@ -38,6 +44,19 @@ public class SigmoidNeuron
 			output = newOutput;
 			//setOutput(newOutput);
 		}
+		if (Math.random()<0.5)
+		{
+			weights[index] += _changeRate*Math.signum(value);
+//			setHasChanged(true);
+		}
+	}
+	
+	private void recompute()
+	{
+		_weightedSum = 0.0;
+		for (int i=0; i<input.length; i++)
+			_weightedSum += weights[i]*input[i];
+//		setHasChanged(false);
 	}
 	
 	public void train(double targetValue)

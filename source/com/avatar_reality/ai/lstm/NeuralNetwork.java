@@ -4,9 +4,9 @@ import java.beans.PropertyChangeListener;
 
 public class NeuralNetwork
 {
-	private Neuron[] _inputNodes;
-	private Neuron[] _outputNodes;
-	private Neuron[] _hiddenNodes;
+	private SigmoidNeuron[] _inputNodes;
+	private SigmoidNeuron[] _outputNodes;
+	private SigmoidNeuron[] _hiddenNodes;
 	
 	public NeuralNetwork(int nrInputNodes, int nrHiddenNodes, int nrOutputNodes)
 	{
@@ -21,24 +21,26 @@ public class NeuralNetwork
 			_hiddenNodes[i] = new SigmoidNeuron("Hidden-"+i, 2.0, -1);
 			for (int j=0; j<nrInputNodes; j++)
 			{
-				_hiddenNodes[i].createConnection(_inputNodes[j]);
+				_hiddenNodes[i].createConnection(_inputNodes[j], 0.1);
 			}
 		}
-		for (int i=0; i<nrHiddenNodes; i++)
-		{
-			for (int j=0; j<nrHiddenNodes; j++)
-			{
-				if (i!=j)
-					_hiddenNodes[j].createConnection(_hiddenNodes[i]);
-					
-			}
-		}
+		
+//		for (int i=0; i<nrHiddenNodes; i++)
+//		{
+//			for (int j=0; j<nrHiddenNodes; j++)
+//			{
+//				if (i!=j)
+//					_hiddenNodes[j].createConnection(_hiddenNodes[i], -0.1);
+//					
+//			}
+//		}
+
 		for (int i=0; i<nrOutputNodes; i++)
 		{
 			_outputNodes[i] = new SigmoidNeuron("Output-"+i, 2.0, -1);
 			for (int j=0; j<nrHiddenNodes; j++)
 			{
-				_outputNodes[i].createConnection(_hiddenNodes[j]);
+				_outputNodes[i].createConnection(_hiddenNodes[j], 0.1);
 			}
 		}		
 	}
@@ -66,5 +68,15 @@ public class NeuralNetwork
 			n.addPropertyChangeListener(listener);
 		for (Neuron n : _outputNodes)
 			n.addPropertyChangeListener(listener);
+	}
+	
+	public void reset()
+	{
+		for (Neuron n : _inputNodes)
+			n.setInhibited(false);
+		for (Neuron n : _hiddenNodes)
+			n.setInhibited(false);
+		for (Neuron n : _outputNodes)
+			n.setInhibited(false);		
 	}
 }

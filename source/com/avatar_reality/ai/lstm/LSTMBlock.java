@@ -62,7 +62,7 @@ public class LSTMBlock
 		for (Neuron n : sigmoidNeurons)
 			n.createConnection(inputNeurons[inputNeurons.length-1]);
 	}
-	
+
 	public void print(PrintStream s) throws Exception
 	{
 		s.println("======================================================");

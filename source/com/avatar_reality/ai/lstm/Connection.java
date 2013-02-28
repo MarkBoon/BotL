@@ -24,4 +24,9 @@ public class Connection
 	{
 		_target.adjustInput(value,_index,_propagate);
 	}
+	
+	public String toString()
+	{
+		return _source.getLabel()+" -> "+_target.getLabel();
+	}
 }

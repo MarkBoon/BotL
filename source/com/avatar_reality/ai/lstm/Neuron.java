@@ -12,6 +12,7 @@ public abstract class Neuron
 	static final double THRESHOLD = 0.01;
 	
 	protected double output = 0.0;
+	List<Connection> inputConnections = new ArrayList<Connection>();
 	List<Connection> outputConnections = new ArrayList<Connection>();
 	
 	abstract void adjustInput(double value, int index, boolean propagate);
@@ -20,6 +21,7 @@ public abstract class Neuron
 	private int _x;
 	private int _y;
 	private boolean _hasChanged = true;
+	private boolean _isInhibited = true;
 	
 	private PropertyChangeSupport _propertyChangeSupport = new PropertyChangeSupport(this);
 	
@@ -27,13 +29,23 @@ public abstract class Neuron
 	
 	public String toString()
 	{
-		return _label+": "+output;
+		return getLabel()+": "+output;
+	}
+	
+	public String getLabel()
+	{
+		return _label;
 	}
 	
 	protected void fireChange()
 	{
 		for (Connection c : outputConnections)
 			c.fire(output);
+	}
+	
+	public void addInputConnection(Connection c)
+	{
+		inputConnections.add(c);
 	}
 	
 	public void addOutputConnection(Connection c)
@@ -65,6 +77,21 @@ public abstract class Neuron
 	
 	public void setOutput(double newValue)
 	{
+//		if (isInhibited())
+//			return;
+
+		double oldValue = output;
+		output = newValue;
+		if (oldValue!=newValue)
+		{
+			_propertyChangeSupport.firePropertyChange(OUTPUT_PROPERTY, oldValue, newValue);
+			setHasChanged(true);
+		}
+	}
+	
+	public void setOutput(double newValue, boolean inhibited)
+	{
+		_isInhibited = inhibited;
 		double oldValue = output;
 		output = newValue;
 		if (oldValue!=newValue)
@@ -98,4 +125,15 @@ public abstract class Neuron
 	{
 		_hasChanged = hasChanged;
 	}
+	
+	public boolean isInhibited() 
+	{
+		return _isInhibited;
+	}
+	
+	public void setInhibited(boolean isInhibited) 
+	{
+		_isInhibited = isInhibited;
+	}
+
 }

@@ -13,6 +13,8 @@ public class IdentityNeuron
 	@Override
 	void createConnection(Neuron source)
 	{
-		source.addOutputConnection(new Connection(source,this,-1));
+		Connection c = new Connection(source,this,-1);
+		addInputConnection(c);
+		source.addOutputConnection(c);
 	}
 }

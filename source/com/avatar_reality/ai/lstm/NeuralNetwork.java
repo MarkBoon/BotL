@@ -21,7 +21,7 @@ public class NeuralNetwork
 			_hiddenNodes[i] = new SigmoidNeuron("Hidden-"+i, 2.0, -1);
 			for (int j=0; j<nrInputNodes; j++)
 			{
-				_hiddenNodes[i].createConnection(_inputNodes[j], 0.1);
+				_hiddenNodes[i].createConnection(_inputNodes[j], 0.0);
 			}
 		}
 		
@@ -30,7 +30,7 @@ public class NeuralNetwork
 //			for (int j=0; j<nrHiddenNodes; j++)
 //			{
 //				if (i!=j)
-//					_hiddenNodes[j].createConnection(_hiddenNodes[i], -0.1);
+//					_hiddenNodes[j].createInternalConnection(_hiddenNodes[i], 0.0);
 //					
 //			}
 //		}

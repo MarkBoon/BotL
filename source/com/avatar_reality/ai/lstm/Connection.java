@@ -22,7 +22,7 @@ public class Connection
 	
 	public void fire(double value)
 	{
-		_target.adjustInput(value,_index,_propagate);
+		_target.adjustInput(value,_index,_propagate,this);
 	}
 	
 	public String toString()

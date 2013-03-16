@@ -7,7 +7,7 @@ public class MultiplicationNeuron
 
 	double[] input;
 	
-	synchronized public void adjustInput(double value, int index, boolean propagate)
+	synchronized public void adjustInput(double value, int index, boolean propagate, Connection sources)
 	{
 		input[index] = value;
 		double oldOutput = getOutput();

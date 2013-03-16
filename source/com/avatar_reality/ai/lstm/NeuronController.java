@@ -80,4 +80,11 @@ public class NeuronController
 		while (!_actionQueue.isEmpty())
 			doStep();
 	}
+	
+	public void doRepeat()
+	{
+		for (Neuron n : _network.getInputNodes())
+			addToQueue(n);
+		doRun();
+	}
 }

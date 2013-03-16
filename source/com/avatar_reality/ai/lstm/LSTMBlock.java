@@ -39,9 +39,9 @@ public class LSTMBlock
 	}
 	
 	@Override
-	synchronized public void adjustInput(double value, int index, boolean propagate)
+	synchronized public void adjustInput(double value, int index, boolean propagate, Connection source)
 	{
-		inputNeurons[index].adjustInput(value, index, propagate);
+		inputNeurons[index].adjustInput(value, index, propagate, source);
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public abstract class Neuron
 	List<Connection> inputConnections = new ArrayList<Connection>();
 	List<Connection> outputConnections = new ArrayList<Connection>();
 	
-	abstract void adjustInput(double value, int index, boolean propagate);
+	abstract void adjustInput(double value, int index, boolean propagate, Connection source);
 	abstract void createConnection(Neuron source);
 	
 	private int _x;

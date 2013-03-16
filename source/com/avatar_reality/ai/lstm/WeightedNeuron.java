@@ -13,6 +13,22 @@ public abstract class WeightedNeuron
 	
 	void createConnection(Neuron source, double initialWeight)
 	{
+		addWeight(initialWeight);		
+		Connection c = new Connection(source, this, input.length-1);
+		addInputConnection(c);
+		source.addOutputConnection(c);
+	}
+	
+	void createInternalConnection(Neuron source, double initialWeight)
+	{
+		addWeight(initialWeight);		
+		Connection c = new InternalConnection(source, this, input.length-1, true);
+		addInputConnection(c);
+		source.addOutputConnection(c);
+	}
+	
+	void addWeight(double initialWeight)
+	{
 		int length = 1;
 		if (input!=null)
 			length = input.length+1;
@@ -27,9 +43,5 @@ public abstract class WeightedNeuron
 		input = newInput;
 		weights = newWeights;
 		weights[weights.length-1] = initialWeight;
-		
-		Connection c = new Connection(source,this,input.length-1);
-		addInputConnection(c);
-		source.addOutputConnection(c);
 	}
 }

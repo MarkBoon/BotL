@@ -4,7 +4,7 @@ public class SigmaNeuron extends WeightedNeuron
 {
 	private static final double THRESHOLD = 0.0;
 
-	synchronized public void adjustInput(double value, int index, boolean propagate)
+	synchronized public void adjustInput(double value, int index, boolean propagate, Connection source)
 	{
 		double oldValue = input[index];
 		if (Math.abs(value-oldValue)>THRESHOLD)

@@ -27,6 +27,7 @@ public class NeuronCommandPanel
 	JTextField _nrToDoField;
 	JButton	_propagateButton;
 	JButton _runButton;
+	JButton _repeatButton;
 	JPanel _commandPanel;
 	JPanel _weightPanel;
 	JLabel _weightedSumLabel;
@@ -44,6 +45,7 @@ public class NeuronCommandPanel
 		_nrToDoField.setEditable(false);
 		_propagateButton = new JButton("Step");
 		_runButton = new JButton("Run");
+		_repeatButton = new JButton("Repeat");
 		_weightedSumLabel = new JLabel();
 		_outputLabel = new JLabel();
 		
@@ -60,6 +62,7 @@ public class NeuronCommandPanel
 		_commandPanel.add(_nrToDoField);
 		_commandPanel.add(_propagateButton);
 		_commandPanel.add(_runButton);
+		_commandPanel.add(_repeatButton);
 		_commandPanel.add(_weightedSumLabel);
 		_commandPanel.add(_outputLabel);
 		
@@ -121,6 +124,17 @@ public class NeuronCommandPanel
 				{
 					running = true;
 					_controller.doRun();
+					running = false;
+				}
+			});
+		
+		_repeatButton.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent arg0)
+				{
+					running = true;
+					_controller.doRepeat();
 					running = false;
 				}
 			});
